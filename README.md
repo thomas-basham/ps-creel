@@ -73,7 +73,7 @@ or
 
     yarn dev
 
-Visit http://localhost:3000 to view your app.
+Visit <http://localhost:3000> to view your app.
 
 Deployment
 
@@ -119,7 +119,8 @@ Responsive Design
 The application is styled using Tailwind CSS, making it fully responsive and optimized for both desktop and mobile use.
 File Structure
 
-````wdfw-creel-reports-map/
+```perl
+wdfw-creel-reports-map/
 ├── public/ # Public assets (images, icons)
 ├── src/
 │ ├── app/ # Next.js app directory
@@ -130,7 +131,8 @@ File Structure
 ├── .env.local # Environment variables (Mapbox API key)
 ├── README.md # Project documentation
 ├── package.json # Project configuration and dependencies
-└── tailwind.config.js # Tailwind CSS configuration```
+└── tailwind.config.js # Tailwind CSS configuration
+```
 
 Future Enhancements
 
@@ -147,4 +149,3 @@ Acknowledgements
     Mapbox for map visualization.
     Tailwind CSS for styling.
     Lodash for data manipulation.
-````
