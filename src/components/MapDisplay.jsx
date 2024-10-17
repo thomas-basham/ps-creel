@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useMemo, useCallback } from "react";
-import Map, { Marker } from "react-map-gl";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import Map, { Marker, Source, Layer } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
 import _ from "lodash"; // Lodash to help with grouping
@@ -15,7 +15,20 @@ const MapDisplay = ({ reports }) => {
   });
 
   const [selectedRamp, setSelectedRamp] = useState(null); // Track the selected ramp
+  const [marineAreaData, setMarineAreaData] = useState(null); // To store the marine area boundary data
 
+  // Fetch marine area boundary data (converted to GeoJSON format)
+  useEffect(() => {
+    const fetchMarineAreaData = async () => {
+      const response = await fetch(
+        "https://geodataservices.wdfw.wa.gov/arcgis/rest/services/ApplicationServices/Marine_Areas/MapServer/2/query?where=1%3D1&outFields=*&f=geojson"
+      );
+      const data = await response.json();
+      setMarineAreaData(data);
+    };
+
+    fetchMarineAreaData();
+  }, []);
   // Group reports by Ramp_site
   const groupedReports = useMemo(() => {
     return _.groupBy(reports, "Ramp_site");
@@ -91,6 +104,31 @@ const MapDisplay = ({ reports }) => {
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
           style={{ width: "100%", height: "100%" }}
         >
+          {/* Add the marine area boundary layer if data is available */}
+          {marineAreaData && (
+            <Source type="geojson" data={marineAreaData}>
+              {/* Marine Areas (colored in blue) */}
+              <Layer
+                id="marine-areas"
+                type="line"
+                // filter={["==", "LTYPE", 5]} // Filter for marine areas (LTYPE: 5)
+                paint={{
+                  "line-color": "#004DA8", // Blue color for marine areas
+                  "line-width": 2,
+                }}
+              />
+              {/* US-Canada Border (colored in a different color) */}
+              <Layer
+                id="us-canada-border"
+                type="line"
+                filter={["==", "LTYPE", 9]} // Filter for US-Canada border (LTYPE: 9)
+                paint={{
+                  "line-color": "#D7C29E", // Custom color for the border
+                  "line-width": 3,
+                }}
+              />
+            </Source>
+          )}
           {Object.entries(groupedReports).map(
             ([rampSite, rampReports], index) => {
               const latitude = rampReports[0]?.ramps?.latitude || 47.6062; // Fallback to default if no latitude
