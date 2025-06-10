@@ -1,92 +1,39 @@
+// src/components/MapDisplay.jsx
 "use client";
-import React, { useState, useMemo, useCallback, useEffect } from "react";
-import Map, { Marker, Source, Layer } from "react-map-gl";
+
+import React, { useState, useMemo, useCallback } from "react";
+import Map, { NavigationControl, Popup } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import mapboxgl from "mapbox-gl";
-import _ from "lodash"; // Lodash to help with grouping
+import _ from "lodash";
 
-const MapDisplay = ({ reports }) => {
+import MarineAreaBoundaries from "./MarineAreaBoundaries";
+import RampMarkers from "./RampMarkers";
+import RampReports from "./RampReports";
+
+export default function MapDisplay({ reports }) {
   const [viewport, setViewport] = useState({
-    latitude: 47.6062, // Default to Seattle
-    longitude: -122.3321,
-    zoom: 10,
-    width: "100%",
-    height: "400px",
+    latitude: 47.8562,
+    longitude: -123.3321,
+    zoom: 8,
   });
+  const [selectedRamp, setSelectedRamp] = useState(null);
+  const [areaInfo, setAreaInfo] = useState(null);
 
-  const [selectedRamp, setSelectedRamp] = useState(null); // Track the selected ramp
-  const [marineAreaData, setMarineAreaData] = useState(null); // To store the marine area boundary data
+  const groupedReports = useMemo(
+    () => _.groupBy(reports, "Ramp_site"),
+    [reports]
+  );
 
-  // Fetch marine area boundary data (converted to GeoJSON format)
-  useEffect(() => {
-    const fetchMarineAreaData = async () => {
-      const response = await fetch(
-        "https://geodataservices.wdfw.wa.gov/arcgis/rest/services/ApplicationServices/Marine_Areas/MapServer/2/query?where=1%3D1&outFields=*&f=geojson"
-      );
-      const data = await response.json();
-      setMarineAreaData(data);
-    };
-
-    fetchMarineAreaData();
-  }, []);
-  // Group reports by Ramp_site
-  const groupedReports = useMemo(() => {
-    return _.groupBy(reports, "Ramp_site");
-  }, [reports]);
-
-  // Handle marker clicks to show all reports for a Ramp_site
   const handleMarkerClick = useCallback(
-    (rampSite) => {
-      setSelectedRamp(groupedReports[rampSite]);
-    },
+    (rampSite) => setSelectedRamp(groupedReports[rampSite]),
     [groupedReports]
   );
 
-  // Calculate total fish caught for the selected ramp (by species)
-  const getTotalSpeciesCaught = (rampReports) => {
-    const totalFish = {
-      Chinook: 0,
-      Coho: 0,
-      Chum: 0,
-      Pink: 0,
-      Sockeye: 0,
-      Lingcod: 0,
-      Halibut: 0,
-    };
-
-    rampReports.forEach((report) => {
-      totalFish.Chinook += report.Chinook || 0;
-      totalFish.Coho += report.Coho || 0;
-      totalFish.Chum += report.Chum || 0;
-      totalFish.Pink += report.Pink || 0;
-      totalFish.Sockeye += report.Sockeye || 0;
-      totalFish.Lingcod += report.Lingcod || 0;
-      totalFish.Halibut += report.Halibut || 0;
-    });
-
-    return totalFish;
-  };
-
-  const getTotalFishCaught = (totalFish) => {
-    return (
-      totalFish.Chinook +
-      totalFish.Coho +
-      totalFish.Chum +
-      totalFish.Pink +
-      totalFish.Sockeye +
-      totalFish.Lingcod +
-      totalFish.Halibut
-    );
-  };
-
-  // Get the date range for the reports (since they are sorted by date)
   const reportDateRange = useMemo(() => {
-    if (reports.length === 0) return "No reports available";
-
-    const firstDate = new Date(reports[0].Sample_date);
-    const lastDate = new Date(reports[reports.length - 1].Sample_date);
-
-    return `${firstDate.toLocaleDateString()} - ${lastDate.toLocaleDateString()}`;
+    if (!reports.length) return "No reports available";
+    const first = new Date(reports[0].Sample_date);
+    const last = new Date(reports[reports.length - 1].Sample_date);
+    return `${first.toLocaleDateString()} – ${last.toLocaleDateString()}`;
   }, [reports]);
 
   return (
@@ -96,116 +43,58 @@ const MapDisplay = ({ reports }) => {
         Reports from: {reportDateRange}
       </div>
 
-      <div className="relative w-full h-96 md:h-[90vh]">
+      <div className="w-full h-96 md:h-[90vh]">
         <Map
           {...viewport}
           mapStyle="mapbox://styles/mapbox/streets-v11"
-          onMoveEnd={(event) => setViewport(event.viewState)} // Trigger only on move end
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+          onMoveEnd={(evt) => setViewport(evt.viewState)}
+          interactiveLayerIds={["marine-fill"]}
+          onClick={(evt) => {
+            const feature = evt.features?.find(
+              (f) => f.layer.id === "marine-fill"
+            );
+            if (feature) {
+              const lngLat = evt.lngLat.toArray();
+              setAreaInfo({ lngLat, props: feature.properties });
+            }
+          }}
           style={{ width: "100%", height: "100%" }}
         >
-          {/* Add the marine area boundary layer if data is available */}
-          {marineAreaData && (
-            <Source type="geojson" data={marineAreaData}>
-              {/* Marine Areas (colored in blue) */}
-              <Layer
-                id="marine-areas"
-                type="line"
-                // filter={["==", "LTYPE", 5]} // Filter for marine areas (LTYPE: 5)
-                paint={{
-                  "line-color": "#004DA8", // Blue color for marine areas
-                  "line-width": 2,
-                }}
-              />
-              {/* US-Canada Border (colored in a different color) */}
-              <Layer
-                id="us-canada-border"
-                type="line"
-                filter={["==", "LTYPE", 9]} // Filter for US-Canada border (LTYPE: 9)
-                paint={{
-                  "line-color": "#D7C29E", // Custom color for the border
-                  "line-width": 3,
-                }}
-              />
-            </Source>
-          )}
-          {Object.entries(groupedReports).map(
-            ([rampSite, rampReports], index) => {
-              const latitude = rampReports[0]?.ramps?.latitude || 47.6062; // Fallback to default if no latitude
-              const longitude = rampReports[0]?.ramps?.longitude || -122.3321; // Fallback to default if no longitude
+          <NavigationControl position="top-right" />
 
-              return (
-                <Marker
-                  key={index}
-                  longitude={longitude}
-                  latitude={latitude}
-                  onClick={() => handleMarkerClick(rampSite)}
-                >
-                  <div className="relative">
-                    <button className="text-2xl hover:text-red-500">🐠</button>
-                  </div>
-                </Marker>
-              );
-            }
+          <MarineAreaBoundaries />
+
+          <RampMarkers
+            groupedReports={groupedReports}
+            handleMarkerClick={handleMarkerClick}
+          />
+
+          {areaInfo && (
+            <Popup
+              longitude={areaInfo.lngLat[0]}
+              latitude={areaInfo.lngLat[1]}
+              closeButton={false}
+              closeOnClick={false}
+              className="pointer-events-auto"
+              onClose={() => setAreaInfo(null)}
+              anchor="bottom"
+              offset={[0, -10]}
+            >
+              <div style={{ fontSize: 12 }}>
+                <strong>Area {areaInfo.props.maNumber}</strong>
+                <div>{areaInfo.props.maName}</div>
+              </div>
+            </Popup>
           )}
         </Map>
       </div>
 
-      {/* Popup showing all reports for the selected ramp */}
-      {selectedRamp && (
-        <div className="absolute max-h-full p-4 overflow-auto bg-white rounded-md shadow-lg bottom-4 left-4">
-          <small className="text-gray-600">
-            Showing {reports.length} most recent reports
-          </small>
-          <h2 className="text-xl font-bold text-gray-800">
-            Reports for {selectedRamp[0].Ramp_site}
-          </h2>
-
-          {/* Total Fish Caught by Species */}
-          <p className="font-semibold text-gray-700 text-md">
-            Total Fish Caught:{" "}
-            {getTotalFishCaught(getTotalSpeciesCaught(selectedRamp))}
-          </p>
-          <ul className="mb-4">
-            {Object.entries(getTotalSpeciesCaught(selectedRamp)).map(
-              ([species, total], idx) =>
-                total > 0 && (
-                  <li key={idx} className="text-gray-600">
-                    {species}: {total}
-                  </li>
-                )
-            )}
-          </ul>
-
-          <ul className="text-gray-600">
-            {selectedRamp.map((report, idx) => (
-              <li key={idx} className="mb-2">
-                <p>{report.Sample_date}</p>
-                <p>Anglers: {report.Anglers}</p>
-                {/* Show only fish caught if greater than 0 */}
-                {report.Chinook > 0 && <p>Chinook: {report.Chinook}</p>}
-                {report.Coho > 0 && <p>Coho: {report.Coho}</p>}
-                {report.Chum > 0 && <p>Chum: {report.Chum}</p>}
-                {report.Pink > 0 && <p>Pink: {report.Pink}</p>}
-                {report.Sockeye > 0 && <p>Sockeye: {report.Sockeye}</p>}
-                {report.Lingcod > 0 && <p>Lingcod: {report.Lingcod}</p>}
-                {report.Halibut > 0 && <p>Halibut: {report.Halibut}</p>}
-
-                <hr className="my-2" />
-              </li>
-            ))}
-          </ul>
-
-          <button
-            className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-            onClick={() => setSelectedRamp(null)} // Close the popup
-          >
-            Close
-          </button>
-        </div>
-      )}
+      <RampReports
+        selectedRamp={selectedRamp}
+        reports={reports}
+        setSelectedRamp={setSelectedRamp}
+      />
     </div>
   );
-};
-
-export default MapDisplay;
+}

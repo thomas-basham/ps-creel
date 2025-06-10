@@ -8,7 +8,6 @@ export const useReports = () => {
     process.env.NEXT_PUBLIC_REPORTS_API_URL + "/reports?limit=500",
     fetcher
   );
-  console.log(data)
 
   return {
     reports: data,
