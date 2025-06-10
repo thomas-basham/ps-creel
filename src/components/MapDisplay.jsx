@@ -43,7 +43,7 @@ export default function MapDisplay({ reports }) {
         Reports from: {reportDateRange}
       </div>
 
-      <div className="w-full h-96 md:h-[90vh]">
+      <div className="w-full h-[100vh] ">
         <Map
           {...viewport}
           mapStyle="mapbox://styles/mapbox/streets-v11"
@@ -82,8 +82,10 @@ export default function MapDisplay({ reports }) {
               offset={[0, -10]}
             >
               <div style={{ fontSize: 12 }}>
-                <strong>Area {areaInfo.props.maNumber}</strong>
-                <div>{areaInfo.props.maName}</div>
+                <strong className="dark:text-black">
+                  Area {areaInfo.props.maNumber}
+                </strong>
+                <div className="dark:text-black">{areaInfo.props.maName}</div>
               </div>
             </Popup>
           )}
