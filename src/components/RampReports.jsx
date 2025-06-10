@@ -6,6 +6,7 @@ export default function RampReports({
 }) {
   // Calculate total fish caught for the selected ramp (by species)
   const getTotalSpeciesCaught = (rampReports) => {
+    console.log(reports);
     const totalFish = {
       Chinook: 0,
       Coho: 0,
@@ -43,38 +44,42 @@ export default function RampReports({
   return (
     <>
       {selectedRamp && (
-        <div className="absolute max-h-full p-4 overflow-auto bg-white rounded-md shadow-lg bottom-4 left-4">
+        <div className="absolute h-full max-h-[90vh] p-4 bg-white rounded-md shadow-lg bottom-12 left-12">
           <small className="text-gray-600">
-            Showing {reports.length} most recent reports
+            Showing {selectedRamp.length} most recent reports
           </small>
           <h2 className="text-xl font-bold text-gray-800">
             Reports for {selectedRamp[0].Ramp_site}
           </h2>
+          <hr className="my-2" />
 
-          {/* Total Fish Caught by Species */}
-          <p className="font-semibold text-gray-700 text-md">
-            Total Fish Caught:{" "}
-            {getTotalFishCaught(getTotalSpeciesCaught(selectedRamp))}
-          </p>
-          <ul className="mb-4">
-            {Object.entries(getTotalSpeciesCaught(selectedRamp)).map(
-              ([species, total], idx) =>
-                total > 0 && (
-                  <li key={idx} className="text-gray-600">
-                    {species}: {total}
-                  </li>
-                )
-            )}
-          </ul>
+          <div className="overflow-scroll max-h-10/12 ">
+            {/* Total Fish Caught by Species */}
+            <p className="font-semibold text-gray-700 text-md">
+              Total Fish Caught:{" "}
+              {getTotalFishCaught(getTotalSpeciesCaught(selectedRamp))}
+            </p>
 
-          <ul className="text-gray-600">
-            {selectedRamp.map((report, idx) => (
-              <ReportCard key={idx} report={report} />
-            ))}
-          </ul>
+            <ul className="mb-4">
+              {Object.entries(getTotalSpeciesCaught(selectedRamp)).map(
+                ([species, total], idx) =>
+                  total > 0 && (
+                    <li key={idx} className="text-gray-600">
+                      {species}: {total}
+                    </li>
+                  )
+              )}
+            </ul>
+            <hr className="my-2" />
 
+            <ul className="overflow-auto text-gray-600 ">
+              {selectedRamp.map((report, idx) => (
+                <ReportCard key={idx} report={report} />
+              ))}
+            </ul>
+          </div>
           <button
-            className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+            className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:cursor-pointer hover:bg-blue-600"
             onClick={() => setSelectedRamp(null)} // Close the popup
           >
             Close
