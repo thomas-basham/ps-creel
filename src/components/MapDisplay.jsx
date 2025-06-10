@@ -1,7 +1,7 @@
 // src/components/MapDisplay.jsx
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import Map, { NavigationControl, Popup } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import _ from "lodash";
@@ -11,6 +11,7 @@ import RampMarkers from "./RampMarkers";
 import RampReports from "./RampReports";
 
 export default function MapDisplay({ reports }) {
+  const mapRef = useRef(null);
   const [viewport, setViewport] = useState({
     latitude: 47.8562,
     longitude: -123.3321,
@@ -18,6 +19,7 @@ export default function MapDisplay({ reports }) {
   });
   const [selectedRamp, setSelectedRamp] = useState(null);
   const [areaInfo, setAreaInfo] = useState(null);
+  const [hoveredId, setHoveredId] = useState(null);
 
   const groupedReports = useMemo(
     () => _.groupBy(reports, "Ramp_site"),
@@ -45,18 +47,61 @@ export default function MapDisplay({ reports }) {
 
       <div className="w-full h-[100vh] ">
         <Map
+          ref={mapRef}
           {...viewport}
           mapStyle="mapbox://styles/mapbox/streets-v11"
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
           onMoveEnd={(evt) => setViewport(evt.viewState)}
+          // tell it which layer to listen on
           interactiveLayerIds={["marine-fill"]}
+          // hover
+          onMouseMove={(evt) => {
+            const feature = evt.features?.find(
+              (f) => f.layer.id === "marine-fill"
+            );
+            const newId = feature?.id ?? null;
+            if (hoveredId !== newId) {
+              // clear old hover
+              if (hoveredId !== null) {
+                mapRef.current
+                  .getMap()
+                  .setFeatureState(
+                    { source: "marine-areas", id: hoveredId },
+                    { hover: false }
+                  );
+              }
+              // set new hover
+              if (newId !== null) {
+                mapRef.current
+                  .getMap()
+                  .setFeatureState(
+                    { source: "marine-areas", id: newId },
+                    { hover: true }
+                  );
+              }
+              setHoveredId(newId);
+            }
+          }}
+          // leave → clear hover
+          onMouseLeave={() => {
+            if (hoveredId !== null) {
+              mapRef.current
+                .getMap()
+                .setFeatureState(
+                  { source: "marine-areas", id: hoveredId },
+                  { hover: false }
+                );
+              setHoveredId(null);
+            }
+          }}
+          // click → popup
           onClick={(evt) => {
             const feature = evt.features?.find(
               (f) => f.layer.id === "marine-fill"
             );
             if (feature) {
-              const lngLat = evt.lngLat.toArray();
-              setAreaInfo({ lngLat, props: feature.properties });
+              const [lng, lat] = evt.lngLat.toArray();
+              setAreaInfo({ lngLat: [lng, lat], props: feature.properties });
             }
           }}
           style={{ width: "100%", height: "100%" }}

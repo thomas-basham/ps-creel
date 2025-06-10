@@ -14,16 +14,18 @@ export default function MarineAreaBoundaries() {
       f: "geojson",
     });
     const url =
-      `https://geodataservices.wdfw.wa.gov/arcgis/rest/services/` +
-      `ApplicationServices/Marine_Areas/MapServer/3/query?${params}`;
+      "https://geodataservices.wdfw.wa.gov/arcgis/rest/services/" +
+      "ApplicationServices/Marine_Areas/MapServer/3/query?" +
+      params.toString();
 
     const res = await fetch(url);
     const raw = await res.json();
-    if (raw.features) {
+    if (raw.features && Array.isArray(raw.features)) {
       setData({
         type: "FeatureCollection",
-        features: raw.features.map((f) => ({
+        features: raw.features.map((f, idx) => ({
           type: "Feature",
+          id: parseInt(f.properties.maNumber, 10) || idx, // ← assign a numeric id
           geometry: f.geometry,
           properties: f.properties,
         })),
@@ -37,6 +39,7 @@ export default function MarineAreaBoundaries() {
     fetchAreas();
   }, [fetchAreas]);
 
+  // static color mapping stays the same
   const fillColor = [
     "match",
     ["get", "maNumber"],
@@ -77,18 +80,12 @@ export default function MarineAreaBoundaries() {
         id="marine-fill"
         type="fill"
         paint={{
-          // darken on hover via feature-state 'hover'
-          "fill-color": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            "#004080", // darker shade when hovered
-            fillColor,
-          ],
+          "fill-color": fillColor,
           "fill-opacity": [
             "case",
             ["boolean", ["feature-state", "hover"], false],
-            0.9,
-            0.6,
+            0.99, // opacity when hovered
+            0.4, // default opacity
           ],
         }}
       />
