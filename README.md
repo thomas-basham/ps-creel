@@ -61,9 +61,3 @@ CLIENT_URL=http://localhost:3000
 3. Commit your changes (`git commit -am 'Add foo'`)
 4. Push to the branch (`git push origin feature/foo`)
 5. Open a Pull Request
-
----
-
-## License
-
-MIT © Your Name
