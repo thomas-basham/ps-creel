@@ -44,39 +44,42 @@ export default function RampReports({
   return (
     <>
       {selectedRamp && (
-        <div className="absolute h-full max-h-[90vh] p-4 bg-white rounded-md shadow-lg bottom-12 left-12">
-          <small className="text-gray-600">
-            Showing {selectedRamp.length} most recent reports
-          </small>
-          <h2 className="text-xl font-bold text-gray-800">
-            Reports for {selectedRamp[0].Ramp_site}
-          </h2>
+        <div className="absolute  max-h-[90vh] p-4 bg-white rounded-md shadow-lg bottom-18 left-18 flex flex-col ">
+          <div>
+            <small className="text-gray-600">
+              Showing {selectedRamp.length} most recent reports
+            </small>
+            <h2 className="text-xl font-bold text-gray-800">
+              Reports for {selectedRamp[0].Ramp_site}
+            </h2>
+          </div>
           <hr className="my-2" />
+          <div className="overflow-auto max-h-9/12">
+            <div className="overflow-scroll max-h-10/12 ">
+              {/* Total Fish Caught by Species */}
+              <p className="font-semibold text-gray-700 text-md">
+                Total Fish Caught:{" "}
+                {getTotalFishCaught(getTotalSpeciesCaught(selectedRamp))}
+              </p>
 
-          <div className="overflow-scroll max-h-10/12 ">
-            {/* Total Fish Caught by Species */}
-            <p className="font-semibold text-gray-700 text-md">
-              Total Fish Caught:{" "}
-              {getTotalFishCaught(getTotalSpeciesCaught(selectedRamp))}
-            </p>
+              <ul className="mb-4">
+                {Object.entries(getTotalSpeciesCaught(selectedRamp)).map(
+                  ([species, total], idx) =>
+                    total > 0 && (
+                      <li key={idx} className="text-gray-600">
+                        {species}: {total}
+                      </li>
+                    )
+                )}
+              </ul>
+              <hr className="my-2" />
 
-            <ul className="mb-4">
-              {Object.entries(getTotalSpeciesCaught(selectedRamp)).map(
-                ([species, total], idx) =>
-                  total > 0 && (
-                    <li key={idx} className="text-gray-600">
-                      {species}: {total}
-                    </li>
-                  )
-              )}
-            </ul>
-            <hr className="my-2" />
-
-            <ul className="overflow-auto text-gray-600 ">
-              {selectedRamp.map((report, idx) => (
-                <ReportCard key={idx} report={report} />
-              ))}
-            </ul>
+              <ul className="overflow-auto text-gray-600 ">
+                {selectedRamp.map((report, idx) => (
+                  <ReportCard key={idx} report={report} />
+                ))}
+              </ul>
+            </div>
           </div>
           <button
             className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:cursor-pointer hover:bg-blue-600"
