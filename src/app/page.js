@@ -1,21 +1,46 @@
 "use client";
+
 import MapDisplay from "@/components/MapDisplay";
-import { useReports } from "@/hooks/useReports";
-
+import { useAllReports, useReportsByDate } from "@/hooks/useReports";
+import { useEffect } from "react";
 const Home = () => {
-  const { reports, isLoading, isError } = useReports();
+  const selectedDateRange = {
+    pastDate: "2025-06-01",
+    recentDate: new Date().toISOString().split("T")[0],
+  };
 
-  if (isLoading)
-    return <div className="p-1 text-center animate-pulse ">Loading...</div>;
-  if (isError)
+  const { allReportsData, allReportsLoading, allReportsError } =
+    useAllReports();
+
+  const { reportsByDateData, reportsByDateLoading, reportsByDateError } =
+    useReportsByDate(selectedDateRange.pastDate, selectedDateRange.recentDate);
+  useEffect(() => {
+    console.log(reportsByDateData);
+
+    console.log(allReportsData);
+  }, [reportsByDateData, allReportsData]);
+
+  if (reportsByDateLoading)
     return (
-      <div className="p-1 text-center text-red-600">Error loading reports</div>
+      <div className="p-1 text-center animate-pulse">
+        Loading date range data...
+      </div>
     );
-  // TODO: allow user to get reports by date range or by most recent amount of reports
+
+  if (reportsByDateError)
+    return (
+      <div className="p-1 text-center text-red-600">
+        Error loading date-filtered reports
+      </div>
+    );
+
   return (
     <div>
-      <h1 className="p-1 text-center">Creel Reports Map</h1>
-      <MapDisplay reports={reports} />
+      <h1 className="p-1 text-2xl font-bold text-center">
+        Puget Sound Creel Reports
+      </h1>
+
+      <MapDisplay reports={reportsByDateData || allReportsData} />
     </div>
   );
 };

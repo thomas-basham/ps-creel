@@ -8,7 +8,7 @@ A full-stack web application that aggregates and visualizes boat-ramp creel (ang
 
 - **Interactive Map**: Displays fishing areas (1–13) color-coded by zone.
 - **Hover & Click**: Marine areas darken on hover and show detailed popups on click.
-- **Ramp Markers**: Custom SVG/emoji icons mark boat ramps; clicking opens a report list.
+- **Ramp Markers**: Custom icons mark boat ramps; clicking opens a report list.
 - **Creel Reports**: Backend API endpoints (`/reports`) serve water sampling data.
 - **Date Range Filter**: Frontend header shows current data date range.
 
@@ -18,7 +18,7 @@ A full-stack web application that aggregates and visualizes boat-ramp creel (ang
 
 - **Frontend**
 
-  - React 18
+  - React
   - Mapbox GL
   - Tailwind CSS
   - Lodash for data grouping

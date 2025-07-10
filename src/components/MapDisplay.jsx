@@ -33,9 +33,9 @@ export default function MapDisplay({ reports }) {
 
   const reportDateRange = useMemo(() => {
     if (!reports.length) return "No reports available";
-    const first = new Date(reports[0].Sample_date);
-    const last = new Date(reports[reports.length - 1].Sample_date);
-    return `${first.toLocaleDateString()} – ${last.toLocaleDateString()}`;
+    const first = new Date(reports[0].sample_date_parsed);
+    const last = new Date(reports[reports.length - 1].sample_date_parsed);
+    return `${last.toLocaleDateString()} – ${first.toLocaleDateString()}`;
   }, [reports]);
 
   return (
