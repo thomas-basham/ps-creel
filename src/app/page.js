@@ -14,11 +14,7 @@ const Home = () => {
 
   const { reportsByDateData, reportsByDateLoading, reportsByDateError } =
     useReportsByDate(selectedDateRange.pastDate, selectedDateRange.recentDate);
-  useEffect(() => {
-    console.log(reportsByDateData);
-
-    console.log(allReportsData);
-  }, [reportsByDateData, allReportsData]);
+  useEffect(() => {}, [reportsByDateData, allReportsData]);
 
   if (reportsByDateLoading)
     return (
