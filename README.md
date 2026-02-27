@@ -1,63 +1,101 @@
 # Puget Sound Creel Reports
 
-A full-stack web application that aggregates and visualizes boat-ramp creel (angler survey) data across Puget Sound. The backend is built with Express, Prisma (PostgreSQL), and deployed on Vercel. The frontend uses React, Mapbox GL, Tailwind CSS, and displays interactive maps with marine area boundaries, ramp markers, and popups.
+Interactive map-based viewer for Puget Sound creel (angler survey) reports.
 
----
+This repository is a **frontend-only Next.js app**. It consumes an external reports API and overlays those reports on a Mapbox map with Washington marine area boundaries.
 
-## Features
+## Links
 
-- **Interactive Map**: Displays fishing areas (1–13) color-coded by zone.
-- **Hover & Click**: Marine areas darken on hover and show detailed popups on click.
-- **Ramp Markers**: Custom icons mark boat ramps; clicking opens a report list.
-- **Creel Reports**: Backend API endpoints (`/reports`) serve water sampling data.
-- **Date Range Filter**: Frontend header shows current data date range.
+- Live app: [pscreelreports.com](https://pscreelreports.com)
+- Backend/API repository: [github.com/thomas-basham/ps-creel-api](https://github.com/thomas-basham/ps-creel-api)
 
----
+## Problem This Project Solves
+
+Creel report data is useful but hard to interpret quickly in raw table form. Anglers and planners usually need to answer questions like:
+
+- Where are fish being caught right now?
+- Which boat ramps have recent activity?
+- What species are being caught at a given launch site?
+
+This app solves that by putting reports directly on a map and summarizing catch data per ramp.
+
+## How The App Solves It
+
+- Fetches recent creel reports from a configurable API (`NEXT_PUBLIC_REPORTS_API_URL`).
+- Fetches marine area geometry from WDFW ArcGIS (public GeoJSON endpoint).
+- Groups reports by `Ramp_site` and places ramp markers using ramp coordinates.
+- Opens a ramp detail panel with:
+  - total fish caught (combined + by species)
+  - report count
+  - individual report details (date, anglers, catch area, species)
+- Supports marine area hover/click interactions to show area number/name.
+- Shows an on-map date range summary for the loaded report set.
+
+## Current Architecture
+
+- **Framework:** Next.js App Router (client-rendered map experience)
+- **Main page:** `src/app/page.js`
+- **Data hooks:** `src/hooks/useReports.js` (SWR + Axios)
+- **Map + interactions:** `src/components/MapDisplay.jsx`
+- **Marine boundaries source:** WDFW ArcGIS REST query endpoint
+- **Ramp details UI:** `src/components/RampReports.jsx`, `src/components/ReportCard.jsx`
 
 ## Tech Stack
 
-- **Frontend**
+- Next.js 15
+- React 19
+- `react-map-gl` + `mapbox-gl`
+- SWR + Axios
+- Lodash (`groupBy`)
+- Tailwind CSS v4
 
-  - React
-  - Mapbox GL
-  - Tailwind CSS
-  - Lodash for data grouping
+## Data Sources
 
-- **Backend**
+- **Creel reports API (required):**
+  - powered by `ps-creel-api` (ETL + Express + Prisma over WDFW CSV data)
+  - `GET {NEXT_PUBLIC_REPORTS_API_URL}/reports?limit=10000`
+  - `GET {NEXT_PUBLIC_REPORTS_API_URL}/reports/date?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`
+- **Marine area polygons (public):**
+  - WDFW ArcGIS Marine Areas service (GeoJSON query)
 
-  - Node.js & Express
-  - Prisma ORM (PostgreSQL)
+## Environment Variables
 
----
+Create `.env.local` in the project root:
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js (>=16.x)
-- npm or Yarn
-- A Mapbox account (for access token)
-- PostgreSQL database (e.g. Supabase, AWS Aurora)
-
-### Environment Variables
-
-Create a `.env` file in both `/api` and `/app` directories (or root):
-
-```
-# Backend (/api/.env)
-DATABASE_URL="postgres://USER:PASS@HOST:PORT/DB?pgbouncer=true&connection_limit=1"
-DIRECT_URL="postgres://USER:PASS@HOST:5432/DB"
-
-# Frontend (/app/.env)
+```bash
 NEXT_PUBLIC_MAPBOX_API_KEY=pk.your_mapbox_token_here
-NEXT_PUBLIC_MAPBOX_API_KEY_NAME=YOUR_MAPBOX_TOKEN
-CLIENT_URL=http://localhost:3000
+NEXT_PUBLIC_REPORTS_API_URL=https://your-reports-api.example.com
 ```
 
-## Contributing
+## Local Development
 
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/foo`)
-3. Commit your changes (`git commit -am 'Add foo'`)
-4. Push to the branch (`git push origin feature/foo`)
-5. Open a Pull Request
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+## Scripts
+
+- `npm run dev` - run local dev server
+- `npm run build` - create production build
+- `npm run start` - run production server
+- `npm run lint` - run ESLint
+
+## Expected Report Shape
+
+The UI currently expects report fields including:
+
+- `Ramp_site`
+- `sample_date_parsed` and/or `Sample_date`
+- `Anglers`
+- `Catch_area`
+- species counts (`Chinook`, `Coho`, `Chum`, `Pink`, `Sockeye`, `Lingcod`, `Halibut`)
+- nested ramp coordinates: `ramps.latitude`, `ramps.longitude`
+
+## Notes And Limitations
+
+- Temporary: the default date range start is hardcoded in `src/app/page.js` (`2025-06-01` to today).
+- The app depends on external services (reports API, Mapbox, WDFW ArcGIS).
+- This repo does not include the reports backend service.
