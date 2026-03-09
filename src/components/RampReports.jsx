@@ -1,12 +1,14 @@
 import ReportCard from "./ReportCard";
 export default function RampReports({
-  selectedRamp,
-  reports,
-  setSelectedRamp,
+  selectedReportSet,
+  setSelectedReportSet,
 }) {
-  // Calculate total fish caught for the selected ramp (by species)
-  const getTotalSpeciesCaught = (rampReports) => {
-    console.log(reports);
+  if (!selectedReportSet) return null;
+
+  const selectedReports = selectedReportSet.reports || [];
+
+  // Calculate total fish caught by species for the current selection.
+  const getTotalSpeciesCaught = (reportSet) => {
     const totalFish = {
       Chinook: 0,
       Coho: 0,
@@ -17,7 +19,7 @@ export default function RampReports({
       Halibut: 0,
     };
 
-    rampReports.forEach((report) => {
+    reportSet.forEach((report) => {
       totalFish.Chinook += report.Chinook || 0;
       totalFish.Coho += report.Coho || 0;
       totalFish.Chum += report.Chum || 0;
@@ -41,29 +43,34 @@ export default function RampReports({
     );
   };
 
+  const totalSpeciesCaught = getTotalSpeciesCaught(selectedReports);
+  const totalFishCaught = getTotalFishCaught(totalSpeciesCaught);
+
   return (
-    <>
-      {selectedRamp && (
-        <div className="absolute  max-h-[90vh] p-4 bg-white rounded-md shadow-lg bottom-18 left-18 flex flex-col ">
-          <div>
-            <small className="text-gray-600">
-              Showing {selectedRamp.length} most recent reports
-            </small>
-            <h2 className="text-xl font-bold text-gray-800">
-              Reports for {selectedRamp[0].Ramp_site}
-            </h2>
-          </div>
-          <hr className="my-2" />
-          <div className="overflow-auto max-h-9/12">
-            <div className="overflow-scroll max-h-10/12 ">
+    <div className="absolute  max-h-[90vh] p-4 bg-white rounded-md shadow-lg bottom-18 left-18 flex flex-col ">
+      <div>
+        <small className="text-gray-600">
+          Showing {selectedReports.length} reports
+        </small>
+        <h2 className="text-xl font-bold text-gray-800">
+          Reports for {selectedReportSet.title}
+        </h2>
+        {selectedReportSet.subtitle && (
+          <p className="text-sm text-gray-600">{selectedReportSet.subtitle}</p>
+        )}
+      </div>
+      <hr className="my-2" />
+      <div className="overflow-auto max-h-9/12">
+        <div className="overflow-scroll max-h-10/12 ">
+          {selectedReports.length > 0 ? (
+            <>
               {/* Total Fish Caught by Species */}
               <p className="font-semibold text-gray-700 text-md">
-                Total Fish Caught:{" "}
-                {getTotalFishCaught(getTotalSpeciesCaught(selectedRamp))}
+                Total Fish Caught: {totalFishCaught}
               </p>
 
               <ul className="mb-4">
-                {Object.entries(getTotalSpeciesCaught(selectedRamp)).map(
+                {Object.entries(totalSpeciesCaught).map(
                   ([species, total], idx) =>
                     total > 0 && (
                       <li key={idx} className="text-gray-600">
@@ -75,20 +82,22 @@ export default function RampReports({
               <hr className="my-2" />
 
               <ul className="overflow-auto text-gray-600 ">
-                {selectedRamp.map((report, idx) => (
+                {selectedReports.map((report, idx) => (
                   <ReportCard key={idx} report={report} />
                 ))}
               </ul>
-            </div>
-          </div>
-          <button
-            className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:cursor-pointer hover:bg-blue-600"
-            onClick={() => setSelectedRamp(null)} // Close the popup
-          >
-            Close
-          </button>
+            </>
+          ) : (
+            <p className="text-gray-600">No reports found for this selection.</p>
+          )}
         </div>
-      )}
-    </>
+      </div>
+      <button
+        className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:cursor-pointer hover:bg-blue-600"
+        onClick={() => setSelectedReportSet(null)}
+      >
+        Close
+      </button>
+    </div>
   );
 }

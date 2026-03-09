@@ -5,7 +5,7 @@ import { useAllReports, useReportsByDate } from "@/hooks/useReports";
 import { useEffect } from "react";
 const Home = () => {
   const selectedDateRange = {
-    pastDate: "2025-06-01",
+    pastDate: "2024-01-01",
     recentDate: new Date().toISOString().split("T")[0],
   };
 

@@ -10,33 +10,50 @@ import MarineAreaBoundaries from "./MarineAreaBoundaries";
 import RampMarkers from "./RampMarkers";
 import RampReports from "./RampReports";
 
+const normalizeAreaNumber = (value) => {
+  if (value === null || value === undefined) return null;
+  const match = String(value).trim().match(/\d+/);
+  return match ? match[0] : null;
+};
+
 export default function MapDisplay({ reports }) {
   const mapRef = useRef(null);
+  const reportList = useMemo(
+    () => (Array.isArray(reports) ? reports : []),
+    [reports]
+  );
   const [viewport, setViewport] = useState({
     latitude: 47.8562,
     longitude: -123.3321,
     zoom: 8,
   });
-  const [selectedRamp, setSelectedRamp] = useState(null);
+  const [selectedReportSet, setSelectedReportSet] = useState(null);
   const [areaInfo, setAreaInfo] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
 
   const groupedReports = useMemo(
-    () => _.groupBy(reports, "Ramp_site"),
-    [reports]
+    () => _.groupBy(reportList, "Ramp_site"),
+    [reportList]
   );
 
   const handleMarkerClick = useCallback(
-    (rampSite) => setSelectedRamp(groupedReports[rampSite]),
+    (rampSite) => {
+      setAreaInfo(null);
+      setSelectedReportSet({
+        title: rampSite,
+        subtitle: "Ramp site",
+        reports: groupedReports[rampSite] || [],
+      });
+    },
     [groupedReports]
   );
 
   const reportDateRange = useMemo(() => {
-    if (!reports.length) return "No reports available";
-    const first = new Date(reports[0].sample_date_parsed);
-    const last = new Date(reports[reports.length - 1].sample_date_parsed);
+    if (!reportList.length) return "No reports available";
+    const first = new Date(reportList[0].sample_date_parsed);
+    const last = new Date(reportList[reportList.length - 1].sample_date_parsed);
     return `${last.toLocaleDateString()} – ${first.toLocaleDateString()}`;
-  }, [reports]);
+  }, [reportList]);
 
   return (
     <div className="relative flex flex-col items-center w-full h-full">
@@ -101,7 +118,20 @@ export default function MapDisplay({ reports }) {
             );
             if (feature) {
               const [lng, lat] = evt.lngLat.toArray();
+              const areaNumber = normalizeAreaNumber(feature.properties?.maNumber);
+              const areaReports = areaNumber
+                ? reportList.filter(
+                    (report) =>
+                      normalizeAreaNumber(report?.Catch_area) === areaNumber
+                  )
+                : [];
+
               setAreaInfo({ lngLat: [lng, lat], props: feature.properties });
+              setSelectedReportSet({
+                title: areaNumber ? `Area ${areaNumber}` : "Selected Area",
+                subtitle: feature.properties?.maName || null,
+                reports: areaReports,
+              });
             }
           }}
           style={{ width: "100%", height: "100%" }}
@@ -138,9 +168,8 @@ export default function MapDisplay({ reports }) {
       </div>
 
       <RampReports
-        selectedRamp={selectedRamp}
-        reports={reports}
-        setSelectedRamp={setSelectedRamp}
+        selectedReportSet={selectedReportSet}
+        setSelectedReportSet={setSelectedReportSet}
       />
     </div>
   );

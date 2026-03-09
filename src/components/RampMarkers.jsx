@@ -13,7 +13,10 @@ export default function RampMarkers({ groupedReports, handleMarkerClick }) {
             key={index}
             longitude={longitude}
             latitude={latitude}
-            onClick={() => handleMarkerClick(rampSite)}
+            onClick={(event) => {
+              event.originalEvent?.stopPropagation();
+              handleMarkerClick(rampSite);
+            }}
           >
             <div className="relative ">
               <button className="text-2xl hover:text-red-500 hover:cursor-pointer">
