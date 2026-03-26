@@ -75,7 +75,7 @@ export default function Home() {
     return (
       <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#03111b] px-6 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(87,190,255,0.18),_transparent_34%),linear-gradient(135deg,_#01060b_6%,_#072238_48%,_#01050a_100%)]" />
-        <div className="creel-loader-grid absolute inset-0 opacity-35" />
+        <div className="absolute inset-0 creel-loader-grid opacity-35" />
         <div className="creel-surface-strong relative z-10 max-w-xl rounded-[2rem] p-8 text-center">
           <p className="text-[0.72rem] font-medium uppercase tracking-[0.5em] text-cyan-100/60">
             Signal Interrupted
@@ -94,7 +94,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#03111b] text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(87,190,255,0.18),_transparent_30%),radial-gradient(circle_at_bottom_left,_rgba(7,95,145,0.32),_transparent_34%),linear-gradient(135deg,_#01060b_6%,_#072238_48%,_#01050a_100%)]" />
-      <div className="creel-loader-grid absolute inset-0 opacity-30" />
+      <div className="absolute inset-0 creel-loader-grid opacity-30" />
       <div className="creel-loader-glow absolute left-[20%] top-[18%] h-[30rem] w-[30rem] rounded-full opacity-80" />
       <div
         className="creel-loader-glow absolute left-[82%] top-[72%] h-[22rem] w-[22rem] rounded-full opacity-70"
@@ -104,19 +104,19 @@ export default function Home() {
       <div className="relative z-10 mx-auto flex min-h-screen max-w-[92rem] flex-col gap-5 px-4 py-4 sm:px-6 sm:py-6">
         <header className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
           <section className="creel-surface rounded-[2rem] p-6 sm:p-8">
-            <div className="inline-flex items-center gap-3 rounded-full border border-cyan-100/10 bg-white/5 px-4 py-2">
-              <span className="creel-loader-dot h-2 w-2 rounded-full bg-cyan-100" />
+            <div className="inline-flex items-center gap-3 px-4 py-2 border rounded-full border-cyan-100/10 bg-white/5">
+              <span className="w-2 h-2 rounded-full creel-loader-dot bg-cyan-100" />
               <span className="text-[0.72rem] font-medium uppercase tracking-[0.45em] text-cyan-50/72">
                 Live Marine Dashboard
               </span>
             </div>
 
-            <div className="mt-6 max-w-4xl space-y-4">
+            <div className="max-w-4xl mt-6 space-y-4">
               <p className="text-[0.72rem] font-medium uppercase tracking-[0.65em] text-cyan-100/55">
                 Puget Sound Creel
               </p>
               <h1 className="text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl xl:text-[3.65rem]">
-                Explore the Sound through a night-watch creel display.
+                Explore the Sound creel data in a new way.
               </h1>
               <p className="max-w-3xl text-sm leading-7 text-cyan-50/72 sm:text-base">
                 This map turns survey reports into a single command deck for
@@ -126,7 +126,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 mt-8 sm:grid-cols-2 xl:grid-cols-4">
               {summaryItems.map((item) => (
                 <div
                   key={item.label}
@@ -144,7 +144,7 @@ export default function Home() {
           </section>
 
           <aside className="creel-surface-strong rounded-[2rem] p-6 sm:p-7">
-            <div className="flex h-full flex-col justify-between gap-6">
+            <div className="flex flex-col justify-between h-full gap-6">
               <div className="space-y-4">
                 <p className="text-[0.7rem] font-medium uppercase tracking-[0.45em] text-cyan-100/55">
                   Mission Briefing
@@ -188,7 +188,7 @@ export default function Home() {
           </aside>
         </header>
 
-        <div className="absolute right-8 top-8 hidden xl:block">
+        <div className="absolute hidden right-8 top-8 xl:block">
           <div className="relative group">
             <button
               type="button"
