@@ -1,4 +1,5 @@
 import ReportCard from "./ReportCard";
+
 export default function RampReports({
   selectedReportSet,
   setSelectedReportSet,
@@ -45,59 +46,101 @@ export default function RampReports({
 
   const totalSpeciesCaught = getTotalSpeciesCaught(selectedReports);
   const totalFishCaught = getTotalFishCaught(totalSpeciesCaught);
+  const totalAnglers = selectedReports.reduce(
+    (sum, report) => sum + Number(report.Anglers || 0),
+    0
+  );
+  const speciesEntries = Object.entries(totalSpeciesCaught).filter(
+    ([, total]) => total > 0
+  );
+  const summaryItems = [
+    {
+      label: "Reports",
+      value: selectedReports.length.toLocaleString(),
+    },
+    {
+      label: "Anglers",
+      value: totalAnglers.toLocaleString(),
+    },
+    {
+      label: "Fish",
+      value: totalFishCaught.toLocaleString(),
+    },
+  ];
 
   return (
-    <div className="absolute  max-h-[90vh] p-4 bg-white rounded-md shadow-lg bottom-18 left-18 flex flex-col ">
-      <div>
-        <small className="text-gray-600">
-          Showing {selectedReports.length} reports
-        </small>
-        <h2 className="text-xl font-bold text-gray-800">
-          Reports for {selectedReportSet.title}
-        </h2>
-        {selectedReportSet.subtitle && (
-          <p className="text-sm text-gray-600">{selectedReportSet.subtitle}</p>
-        )}
-      </div>
-      <hr className="my-2" />
-      <div className="overflow-auto max-h-9/12">
-        <div className="overflow-scroll max-h-10/12 ">
-          {selectedReports.length > 0 ? (
-            <>
-              {/* Total Fish Caught by Species */}
-              <p className="font-semibold text-gray-700 text-md">
-                Total Fish Caught: {totalFishCaught}
+    <div className="absolute inset-x-3 bottom-3 z-20 w-auto sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[26rem] lg:w-[29rem]">
+      <div className="creel-surface-strong flex max-h-[78vh] flex-col overflow-hidden rounded-[1.75rem]">
+        <div className="border-b border-cyan-100/10 px-5 py-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[0.68rem] font-medium uppercase tracking-[0.35em] text-cyan-100/50">
+                Selection Lock
               </p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">
+                {selectedReportSet.title}
+              </h2>
+              {selectedReportSet.subtitle && (
+                <p className="mt-2 text-sm leading-6 text-cyan-50/68">
+                  {selectedReportSet.subtitle}
+                </p>
+              )}
+            </div>
 
-              <ul className="mb-4">
-                {Object.entries(totalSpeciesCaught).map(
-                  ([species, total], idx) =>
-                    total > 0 && (
-                      <li key={idx} className="text-gray-600">
-                        {species}: {total}
-                      </li>
-                    )
-                )}
-              </ul>
-              <hr className="my-2" />
+            <button
+              type="button"
+              className="rounded-full border border-cyan-100/10 bg-white/5 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.25em] text-cyan-50/75 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white"
+              onClick={() => setSelectedReportSet(null)}
+            >
+              Close
+            </button>
+          </div>
 
-              <ul className="overflow-auto text-gray-600 ">
-                {selectedReports.map((report, idx) => (
-                  <ReportCard key={idx} report={report} />
-                ))}
-              </ul>
-            </>
+          <div className="mt-5 grid grid-cols-3 gap-3">
+            {summaryItems.map((item) => (
+              <div
+                key={item.label}
+                className="creel-metric-card rounded-[1.2rem] px-3 py-3"
+              >
+                <p className="text-[0.62rem] font-medium uppercase tracking-[0.28em] text-cyan-100/45">
+                  {item.label}
+                </p>
+                <p className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white">
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {speciesEntries.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              {speciesEntries.map(([species, total]) => (
+                <div
+                  key={species}
+                  className="rounded-full border border-cyan-100/10 bg-white/5 px-3 py-1.5 text-xs text-cyan-50/80"
+                >
+                  <span className="font-medium text-white">{species}</span>:{" "}
+                  {total.toLocaleString()}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="creel-scrollbar flex-1 overflow-y-auto px-5 py-5">
+          {selectedReports.length > 0 ? (
+            <ul className="space-y-3">
+              {selectedReports.map((report, idx) => (
+                <ReportCard key={idx} report={report} />
+              ))}
+            </ul>
           ) : (
-            <p className="text-gray-600">No reports found for this selection.</p>
+            <div className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-4 py-5 text-sm leading-7 text-cyan-50/68">
+              No reports were found for this selection.
+            </div>
           )}
         </div>
       </div>
-      <button
-        className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-md hover:cursor-pointer hover:bg-blue-600"
-        onClick={() => setSelectedReportSet(null)}
-      >
-        Close
-      </button>
     </div>
   );
 }

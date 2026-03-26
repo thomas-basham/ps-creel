@@ -39,37 +39,36 @@ export default function MarineAreaBoundaries() {
     fetchAreas();
   }, [fetchAreas]);
 
-  // static color mapping stays the same
   const fillColor = [
     "match",
     ["get", "maNumber"],
     "1",
-    "#fee5d9",
+    "#0a2136",
     "2",
-    "#fcbba1",
+    "#0d2942",
     "3",
-    "#fc9272",
+    "#11314d",
     "4",
-    "#fb6a4a",
+    "#143958",
     "5",
-    "#ef3b2c",
+    "#174263",
     "6",
-    "#cb181d",
+    "#1a4b6f",
     "7",
-    "#a50f15",
+    "#1d567a",
     "8",
-    "#67000d",
+    "#216185",
     "9",
-    "#edf8e9",
+    "#266f90",
     "10",
-    "#bae4b3",
+    "#2d7d9b",
     "11",
-    "#74c476",
+    "#358ba6",
     "12",
-    "#31a354",
+    "#4799af",
     "13",
-    "#006d2c",
-    /* default */ "#ccc",
+    "#5fabc0",
+    "#15324a",
   ];
 
   if (!data) return null;
@@ -84,17 +83,48 @@ export default function MarineAreaBoundaries() {
           "fill-opacity": [
             "case",
             ["boolean", ["feature-state", "hover"], false],
-            0.99, // opacity when hovered
-            0.4, // default opacity
+            0.52,
+            0.2,
           ],
+        }}
+      />
+      <Layer
+        id="marine-outline-glow"
+        type="line"
+        paint={{
+          "line-color": "#63d7ff",
+          "line-opacity": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.4,
+            0.14,
+          ],
+          "line-width": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            6,
+            3,
+          ],
+          "line-blur": 2.5,
         }}
       />
       <Layer
         id="marine-outline"
         type="line"
         paint={{
-          "line-color": "#004DA8",
-          "line-width": 2,
+          "line-color": "#9ee9ff",
+          "line-opacity": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.92,
+            0.5,
+          ],
+          "line-width": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            2.3,
+            1.1,
+          ],
         }}
       />
     </Source>
