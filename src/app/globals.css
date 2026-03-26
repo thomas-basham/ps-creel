@@ -15,11 +15,151 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+@keyframes creel-loader-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes creel-loader-pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes creel-loader-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+@keyframes creel-loader-grid-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.02);
+  }
+  to {
+    transform: translate3d(0, -36px, 0) scale(1);
+  }
+}
+
+@keyframes creel-loader-dot-ping {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes creel-loader-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(20%);
+  }
+  100% {
+    transform: translateX(160%);
+  }
+}
+
+@keyframes creel-loader-core-pulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+.creel-loader-grid {
+  background-image:
+    linear-gradient(rgba(138, 217, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(138, 217, 255, 0.1) 1px, transparent 1px);
+  background-position: center;
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at center, black 28%, transparent 82%);
+  animation: creel-loader-grid-drift 18s linear infinite;
+}
+
+.creel-loader-glow {
+  background: radial-gradient(
+    circle,
+    rgba(82, 192, 255, 0.28) 0%,
+    rgba(82, 192, 255, 0.12) 28%,
+    transparent 72%
+  );
+  filter: blur(22px);
+  animation: creel-loader-breathe 6s ease-in-out infinite;
+}
+
+.creel-loader-sweep {
+  background: conic-gradient(
+    from 0deg,
+    rgba(149, 237, 255, 0) 0deg,
+    rgba(149, 237, 255, 0) 292deg,
+    rgba(149, 237, 255, 0.42) 326deg,
+    rgba(149, 237, 255, 0.04) 360deg
+  );
+  mask-image: radial-gradient(circle, transparent 0 20%, black 64%, transparent 90%);
+  mix-blend-mode: screen;
+  animation: creel-loader-spin 5.8s linear infinite;
+}
+
+.creel-loader-ring {
+  animation: creel-loader-pulse 4s ease-in-out infinite;
+}
+
+.creel-loader-orbit {
+  animation: creel-loader-spin 16s linear infinite;
+}
+
+.creel-loader-orbit-reverse {
+  animation: creel-loader-spin 11s linear infinite reverse;
+}
+
+.creel-loader-dot {
+  animation: creel-loader-dot-ping 2.4s ease-in-out infinite;
+}
+
+.creel-loader-progress {
+  width: 38%;
+  animation: creel-loader-progress 2.6s ease-in-out infinite;
+}
+
+.creel-loader-core {
+  animation: creel-loader-core-pulse 2.1s ease-in-out infinite;
 }
