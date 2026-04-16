@@ -4,6 +4,8 @@
 import { Source, Layer } from "react-map-gl/mapbox";
 
 // Freeze the marine area snapshot locally so the map avoids the external WDFW call.
+// Original ArcGIS query:
+// https://geodataservices.wdfw.wa.gov/arcgis/rest/services/ApplicationServices/Marine_Areas/MapServer/3/query?where=1%3D1&outFields=MACN%2CmaNumber%2CmaName&f=geojson
 const MARINE_AREA_BOUNDARIES_URL = "/data/marine-area-boundaries.geojson";
 
 const fillColor = [
