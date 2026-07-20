@@ -1,12 +1,33 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import ReportCard from "./ReportCard";
+import YearCompare from "./YearCompare";
 
 export default function RampReports({
   selectedReportSet,
   setSelectedReportSet,
 }) {
+  const [activeView, setActiveView] = useState("current");
+
+  const selectionKey = selectedReportSet
+    ? `${selectedReportSet.compare?.scope ?? ""}:${
+        selectedReportSet.compare?.name ??
+        selectedReportSet.compare?.areaNumber ??
+        selectedReportSet.title ??
+        ""
+      }`
+    : null;
+
+  useEffect(() => {
+    setActiveView("current");
+  }, [selectionKey]);
+
   if (!selectedReportSet) return null;
 
   const selectedReports = selectedReportSet.reports || [];
+  const canCompare = Boolean(selectedReportSet.compare);
 
   // Calculate total fish caught by species for the current selection.
   const getTotalSpeciesCaught = (reportSet) => {
@@ -125,10 +146,38 @@ export default function RampReports({
               ))}
             </div>
           )}
+
+          {canCompare && (
+            <div className="mt-5 grid grid-cols-2 gap-1 rounded-full border border-cyan-100/10 bg-white/5 p-1">
+              {[
+                { id: "current", label: "Current reports" },
+                { id: "compare", label: "Compare years" },
+              ].map((tab) => {
+                const isActive = activeView === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveView(tab.id)}
+                    aria-pressed={isActive}
+                    className={`rounded-full px-3 py-2 text-xs font-medium uppercase tracking-[0.22em] transition ${
+                      isActive
+                        ? "bg-cyan-100/90 text-[#03111b]"
+                        : "text-cyan-50/70 hover:text-white"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="creel-scrollbar flex-1 overflow-y-auto px-5 py-5">
-          {selectedReports.length > 0 ? (
+          {activeView === "compare" && canCompare ? (
+            <YearCompare compare={selectedReportSet.compare} />
+          ) : selectedReports.length > 0 ? (
             <ul className="space-y-3">
               {selectedReports.map((report, idx) => (
                 <ReportCard key={idx} report={report} />

@@ -66,6 +66,7 @@ export default function MapDisplay({ reports }) {
         title: rampSite || "Unnamed Ramp",
         subtitle: "Ramp site",
         reports: groupedReports[rampSite] || [],
+        compare: rampSite ? { scope: "ramp", name: rampSite } : null,
       });
     },
     [groupedReports]
@@ -215,6 +216,9 @@ export default function MapDisplay({ reports }) {
                     title: areaNumber ? `Area ${areaNumber}` : "Selected Area",
                     subtitle: feature.properties?.maName || null,
                     reports: areaReports,
+                    compare: areaNumber
+                      ? { scope: "area", areaNumber }
+                      : null,
                   });
                 }
               }}
