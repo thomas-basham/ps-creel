@@ -19,6 +19,13 @@ export const metadata = {
     "A consolidated way to View Creel reports for puget sound fishing. Get up to date information about catches for Salmon, Halibut, and more.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#03111b",
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

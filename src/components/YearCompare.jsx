@@ -45,7 +45,7 @@ export default function YearCompare({ compare }) {
 
   if (!compare) {
     return (
-      <div className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-4 py-5 text-sm leading-7 text-cyan-50/68">
+      <div className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-5 py-6 text-sm leading-7 text-cyan-50/70">
         Year-over-year comparison is not available for this selection.
       </div>
     );
@@ -54,26 +54,26 @@ export default function YearCompare({ compare }) {
   const windowDays = compareData?.windowDays ?? 14;
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm leading-6 text-cyan-50/68">
+    <div className="space-y-5">
+      <p className="text-sm leading-7 text-cyan-50/70">
         Same last {windowDays} days vs prior years. Quickly see whether fish
         were being caught here at this time in past seasons.
       </p>
 
       {compareLoading && (
-        <div className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-4 py-5 text-sm leading-7 text-cyan-50/68">
+        <div className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-5 py-6 text-sm leading-7 text-cyan-50/70">
           Loading prior-year surveys...
         </div>
       )}
 
       {compareError && (
-        <div className="rounded-[1.4rem] border border-rose-300/20 bg-rose-500/10 px-4 py-5 text-sm leading-7 text-rose-100/80">
+        <div className="rounded-[1.4rem] border border-rose-300/20 bg-rose-500/10 px-5 py-6 text-sm leading-7 text-rose-100/80">
           Could not load the comparison. Please try again.
         </div>
       )}
 
       {!compareLoading && !compareError && (
-        <ul className="space-y-3">
+        <ul className="space-y-3.5">
           {(compareData?.years || []).map((yearRow) => {
             const meta = STATUS_META[yearRow.status] ?? STATUS_META.no_surveys;
             const windowLabel = formatWindow(
@@ -87,32 +87,32 @@ export default function YearCompare({ compare }) {
             return (
               <li
                 key={yearRow.year}
-                className="rounded-[1.4rem] border border-cyan-100/10 bg-[linear-gradient(180deg,rgba(9,31,48,0.72),rgba(3,15,24,0.9))] px-4 py-4"
+                className="rounded-[1.4rem] border border-cyan-100/10 bg-[linear-gradient(180deg,rgba(9,31,48,0.72),rgba(3,15,24,0.9))] px-5 py-5"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2.5">
                   <div className="min-w-0">
-                    <p className="text-xl font-semibold tracking-[-0.03em] text-white">
+                    <p className="text-xl font-semibold tracking-[-0.03em] text-white tabular-nums">
                       {yearRow.year}
                     </p>
                     {windowLabel && (
-                      <p className="mt-1 text-[0.7rem] uppercase tracking-[0.22em] text-cyan-100/40">
+                      <p className="mt-1.5 text-sm text-cyan-100/50">
                         {windowLabel}
                       </p>
                     )}
                   </div>
 
                   <span
-                    className={`inline-flex shrink-0 items-center gap-2 rounded-full border border-cyan-100/10 bg-white/5 px-3 py-1.5 text-xs font-medium ${meta.textClass}`}
+                    className={`inline-flex shrink-0 items-center gap-2 rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-2 text-sm font-medium ${meta.textClass}`}
                   >
                     <span
-                      className={`h-2 w-2 rounded-full ${meta.dotClass}`}
+                      className={`h-2 w-2 shrink-0 rounded-full ${meta.dotClass}`}
                     />
                     {meta.label}
                   </span>
                 </div>
 
                 {yearRow.status !== "no_surveys" && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
+                  <div className="mt-4 grid grid-cols-3 gap-2.5">
                     {[
                       { label: "Fish", value: yearRow.totalFish },
                       { label: "Anglers", value: yearRow.anglers },
@@ -120,12 +120,12 @@ export default function YearCompare({ compare }) {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="rounded-[1rem] border border-cyan-100/10 bg-[#03131f]/70 px-3 py-2"
+                        className="rounded-[1rem] border border-cyan-100/10 bg-[#03131f]/70 px-3 py-3"
                       >
-                        <p className="text-[0.58rem] font-medium uppercase tracking-[0.24em] text-cyan-100/45">
+                        <p className="creel-label text-cyan-100/50">
                           {item.label}
                         </p>
-                        <p className="mt-1 text-lg font-semibold tracking-[-0.03em] text-white">
+                        <p className="mt-1.5 text-lg font-semibold tracking-[-0.03em] text-white tabular-nums">
                           {Number(item.value || 0).toLocaleString()}
                         </p>
                       </div>
@@ -134,14 +134,14 @@ export default function YearCompare({ compare }) {
                 )}
 
                 {speciesEntries.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-4 flex flex-wrap gap-2">
                     {speciesEntries.map(([species, total]) => (
                       <div
                         key={species}
-                        className="rounded-full border border-cyan-100/10 bg-white/5 px-3 py-1.5 text-xs text-cyan-50/80"
+                        className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-1.5 text-sm text-cyan-50/80"
                       >
-                        <span className="font-medium text-white">{species}</span>
-                        : {total.toLocaleString()}
+                        <span className="font-medium text-white">{species}</span>{" "}
+                        {total.toLocaleString()}
                       </div>
                     ))}
                   </div>
@@ -151,7 +151,7 @@ export default function YearCompare({ compare }) {
           })}
 
           {compareData && (compareData.years || []).length === 0 && (
-            <li className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-4 py-5 text-sm leading-7 text-cyan-50/68">
+            <li className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-5 py-6 text-sm leading-7 text-cyan-50/70">
               No prior-year data has been loaded yet for this location.
             </li>
           )}

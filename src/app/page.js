@@ -1,8 +1,17 @@
 "use client";
 
+import { useState } from "react";
+
 import FullScreenLoader from "@/components/FullScreenLoader";
 import MapDisplay from "@/components/MapDisplay";
 import { useAllReports, useReportsByDate } from "@/hooks/useReports";
+
+const briefingPoints = [
+  "This map plots fishing survey reports across Puget Sound. Open a marine area for region-level totals, or a ramp beacon to isolate a single launch site.",
+  "Marine areas brighten as you scan over them, then lock into a report drawer once selected.",
+  "Beacon markers are launch ramps. Each badge shows how many reports are tied to that site.",
+  "The report drawer aggregates catch, anglers, and species before drilling into individual survey dates.",
+];
 
 const formatDate = (
   value,
@@ -16,6 +25,8 @@ const formatDate = (
 };
 
 export default function Home() {
+  const [briefingOpen, setBriefingOpen] = useState(false);
+
   const selectedDateRange = {
     pastDate: "2024-01-01",
     recentDate: new Date().toISOString().split("T")[0],
@@ -76,14 +87,12 @@ export default function Home() {
       <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#03111b] px-6 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(87,190,255,0.18),_transparent_34%),linear-gradient(135deg,_#01060b_6%,_#072238_48%,_#01050a_100%)]" />
         <div className="absolute inset-0 creel-loader-grid opacity-35" />
-        <div className="creel-surface-strong relative z-10 max-w-xl rounded-[2rem] p-8 text-center">
-          <p className="text-[0.72rem] font-medium uppercase tracking-[0.5em] text-cyan-100/60">
-            Signal Interrupted
-          </p>
-          <h1 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-white">
+        <div className="creel-surface-strong relative z-10 w-full max-w-xl rounded-[1.75rem] p-7 text-center sm:rounded-[2rem] sm:p-10">
+          <p className="creel-eyebrow text-cyan-100/60">Signal Interrupted</p>
+          <h1 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
             Error loading date-filtered reports
           </h1>
-          <p className="mt-4 text-sm leading-7 text-cyan-50/70">
+          <p className="mt-5 text-base leading-7 text-cyan-50/70">
             The dashboard could not finish its latest sync. Check the reports
             API and refresh the page to try again.
           </p>
@@ -101,117 +110,94 @@ export default function Home() {
         style={{ animationDelay: "-2.4s" }}
       />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-[92rem] flex-col gap-5 px-4 py-4 sm:px-6 sm:py-6">
-        <header className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
-          <section className="creel-surface rounded-[2rem] p-6 sm:p-8">
-            <div className="inline-flex items-center gap-3 px-4 py-2 border rounded-full border-cyan-100/10 bg-white/5">
-              <span className="w-2 h-2 rounded-full creel-loader-dot bg-cyan-100" />
-              <span className="text-[0.72rem] font-medium uppercase tracking-[0.45em] text-cyan-50/72">
-                Live Marine Dashboard
-              </span>
-            </div>
+      <main className="creel-section-gap creel-safe-inline relative z-10 mx-auto grid min-h-screen w-full max-w-[92rem] grid-cols-1 content-start px-4 py-6 sm:px-6 sm:py-8 xl:grid-cols-[1.35fr_0.65fr] xl:px-8">
+        <section className="creel-surface rounded-[1.75rem] p-6 sm:rounded-[2rem] sm:p-8 xl:p-10">
+          <div className="inline-flex items-center gap-3 rounded-full border border-cyan-100/10 bg-white/5 px-4 py-2.5">
+            <span className="creel-loader-dot h-2 w-2 shrink-0 rounded-full bg-cyan-100" />
+            <span className="creel-label text-cyan-50/75">
+              Live Marine Dashboard
+            </span>
+          </div>
 
-            <div className="max-w-4xl mt-6 space-y-4">
-              <p className="text-[0.72rem] font-medium uppercase tracking-[0.65em] text-cyan-100/55">
-                Puget Sound Creel
-              </p>
-              <h1 className="text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl xl:text-[3.65rem]">
-                Explore the Sound creel data in a new way.
-              </h1>
-              <p className="max-w-3xl text-sm leading-7 text-cyan-50/72 sm:text-base">
-                This map turns survey reports into a single command deck for
-                launch ramps, marine areas, and catch totals. Hover the water,
-                click a zone, and inspect each sampling date like a live radar
-                trace.
-              </p>
-            </div>
+          <div className="mt-7 max-w-4xl space-y-5">
+            <p className="creel-eyebrow text-cyan-100/55">Puget Sound Creel</p>
+            <h1 className="text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.04em] text-white sm:text-5xl sm:leading-[1.05] xl:text-[3.5rem]">
+              Explore the Sound creel data in a new way.
+            </h1>
+            <p className="max-w-3xl text-base leading-7 text-cyan-50/72 sm:leading-8">
+              This map turns survey reports into a single command deck for
+              launch ramps, marine areas, and catch totals. Scan the water, open
+              a zone, and inspect each sampling date like a live radar trace.
+            </p>
+          </div>
 
-            <div className="grid gap-3 mt-8 sm:grid-cols-2 xl:grid-cols-4">
-              {summaryItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="creel-metric-card rounded-[1.5rem] px-4 py-4"
+          <div className="mt-9 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+            {summaryItems.map((item) => (
+              <div
+                key={item.label}
+                className="creel-metric-card flex flex-col justify-between gap-3 rounded-[1.25rem] px-4 py-5 sm:gap-4 sm:rounded-[1.5rem] sm:px-5 sm:py-6"
+              >
+                <p className="creel-label text-cyan-100/55">{item.label}</p>
+                <p className="text-[1.35rem] font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-2xl">
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <aside className="order-last creel-surface-strong rounded-[1.75rem] p-6 sm:rounded-[2rem] sm:p-7 xl:order-none xl:p-8">
+          <div className="flex h-full flex-col gap-6">
+            <div className="space-y-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="creel-label text-cyan-100/55">
+                    Mission Briefing
+                  </p>
+                  <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">
+                    Read the water fast.
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setBriefingOpen((open) => !open)}
+                  aria-expanded={briefingOpen}
+                  className="-mr-1 -mt-1 shrink-0 rounded-full border border-cyan-100/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-cyan-50/80 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white xl:hidden"
                 >
-                  <p className="text-[0.68rem] font-medium uppercase tracking-[0.35em] text-cyan-100/50">
-                    {item.label}
-                  </p>
-                  <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <aside className="creel-surface-strong rounded-[2rem] p-6 sm:p-7">
-            <div className="flex flex-col justify-between h-full gap-6">
-              <div className="space-y-4">
-                <p className="text-[0.7rem] font-medium uppercase tracking-[0.45em] text-cyan-100/55">
-                  Mission Briefing
-                </p>
-                <h2 className="text-2xl font-semibold tracking-[-0.04em] text-white">
-                  Read the water fast.
-                </h2>
-                <div className="space-y-3 text-sm leading-7 text-cyan-50/68">
-                  <p>
-                    Marine areas brighten when you scan over them, then lock
-                    into a report drawer when selected.
-                  </p>
-                  <p>
-                    Beacon markers represent launch ramps. Each badge shows how
-                    many reports are tied to that site.
-                  </p>
-                  <p>
-                    The report panel aggregates total catch, anglers, and
-                    species breakdowns before drilling into individual survey
-                    dates.
-                  </p>
-                </div>
+                  {briefingOpen ? "Hide" : "How it works"}
+                </button>
               </div>
 
-              <div className="rounded-[1.5rem] border border-cyan-100/10 bg-white/5 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                <p className="text-[0.68rem] font-medium uppercase tracking-[0.35em] text-cyan-100/50">
-                  Active Window
-                </p>
-                <p className="mt-3 text-lg font-medium tracking-[-0.02em] text-white">
-                  {formatDate(selectedDateRange.pastDate)} -{" "}
-                  {formatDate(selectedDateRange.recentDate)}
-                </p>
-                <p className="mt-3 text-sm leading-6 text-cyan-50/60">
-                  Latest sampled report in the current payload:{" "}
-                  <span className="font-medium text-cyan-50/82">
-                    {latestReportLabel}
-                  </span>
-                </p>
+              <div
+                className={`${
+                  briefingOpen ? "space-y-4" : "hidden"
+                } text-base leading-7 text-cyan-50/70 xl:block xl:space-y-4 xl:text-sm xl:leading-7`}
+              >
+                {briefingPoints.map((point) => (
+                  <p key={point}>{point}</p>
+                ))}
               </div>
             </div>
-          </aside>
-        </header>
 
-        <div className="absolute hidden right-8 top-8 xl:block">
-          <div className="relative group">
-            <button
-              type="button"
-              aria-label="About this app"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-cyan-100/10 bg-[#041625]/82 text-sm font-semibold text-cyan-50 shadow-[0_18px_45px_rgba(0,0,0,0.24)] backdrop-blur-xl"
-            >
-              i
-            </button>
-            <div
-              role="tooltip"
-              className="pointer-events-none absolute right-0 top-full z-20 mt-3 w-80 rounded-[1.5rem] border border-cyan-100/10 bg-[#041625]/94 px-4 py-4 text-sm leading-7 text-cyan-50/72 opacity-0 shadow-[0_22px_55px_rgba(0,0,0,0.35)] transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
-            >
-              <p>
-                This app maps fishing survey reports across Puget Sound. Click a
-                marine area for region-level reports or tap a ramp beacon to see
-                one launch site.
+            <div className="rounded-[1.25rem] border border-cyan-100/10 bg-white/5 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:rounded-[1.5rem] xl:mt-auto">
+              <p className="creel-label text-cyan-100/55">Active Window</p>
+              <p className="mt-3 text-lg font-medium tracking-[-0.01em] text-white">
+                {formatDate(selectedDateRange.pastDate)} -{" "}
+                {formatDate(selectedDateRange.recentDate)}
+              </p>
+              <p className="mt-3 text-sm leading-6 text-cyan-50/60">
+                Latest sampled report in the current payload:{" "}
+                <span className="font-medium text-cyan-50/82">
+                  {latestReportLabel}
+                </span>
               </p>
             </div>
           </div>
-        </div>
+        </aside>
 
         <MapDisplay reports={reportList} />
-      </div>
+      </main>
     </div>
   );
 }

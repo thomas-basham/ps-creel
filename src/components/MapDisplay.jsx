@@ -28,8 +28,16 @@ const formatRangeDate = (value) => {
   }).format(date);
 };
 
+// Touch devices get Mapbox's cooperative gestures so a one-finger swipe scrolls
+// the page instead of panning the map out from under the reader.
+const prefersCooperativeGestures = () =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(pointer: coarse)").matches;
+
 export default function MapDisplay({ reports }) {
   const mapRef = useRef(null);
+  const [cooperativeGestures] = useState(prefersCooperativeGestures);
   const reportList = useMemo(
     () => (Array.isArray(reports) ? reports : []),
     [reports]
@@ -47,18 +55,6 @@ export default function MapDisplay({ reports }) {
     () => _.groupBy(reportList, "Ramp_site"),
     [reportList]
   );
-  const reportCount = reportList.length;
-  const rampCount = Object.keys(groupedReports).length;
-  const areaCount = useMemo(
-    () =>
-      new Set(
-        reportList
-          .map((report) => normalizeAreaNumber(report?.Catch_area))
-          .filter(Boolean)
-      ).size,
-    [reportList]
-  );
-
   const handleMarkerClick = useCallback(
     (rampSite) => {
       setAreaInfo(null);
@@ -95,8 +91,8 @@ export default function MapDisplay({ reports }) {
       }
     );
 
-    return `${formatRangeDate(bounds.latest)} - ${formatRangeDate(
-      bounds.earliest
+    return `${formatRangeDate(bounds.earliest)} - ${formatRangeDate(
+      bounds.latest
     )}`;
   }, [reportList]);
 
@@ -107,39 +103,27 @@ export default function MapDisplay({ reports }) {
     : "Select a marine area or ramp to inspect survey details";
 
   return (
-    <div className="relative w-full flex-1">
-      <div className="creel-surface-strong relative overflow-hidden rounded-[2rem] p-2 sm:p-3">
+    <div className="relative w-full xl:col-span-2">
+      <div className="creel-surface-strong relative overflow-hidden rounded-[1.75rem] p-2 sm:rounded-[2rem] sm:p-3">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(83,196,255,0.12),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,0.03),_transparent_24%,_rgba(0,0,0,0.18)_100%)]" />
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex max-w-3xl flex-col gap-3">
-            <div className="inline-flex w-fit items-center gap-3 rounded-full border border-cyan-100/10 bg-[#03131f]/72 px-4 py-2 backdrop-blur-xl">
-              <span className="creel-loader-dot h-2 w-2 rounded-full bg-cyan-100" />
-              <span className="text-[0.68rem] font-medium uppercase tracking-[0.4em] text-cyan-50/72">
-                Live Survey Plot
-              </span>
+        {/* Only the survey window lives over the map. The report, ramp, and area
+            counts are already in the page header, and repeating them here buried
+            the map on small screens. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-wrap items-start gap-2.5 p-4 sm:gap-3 sm:p-5 lg:justify-between">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <div className="inline-flex w-fit items-center gap-2.5 rounded-full border border-cyan-100/10 bg-[#03131f]/80 px-3.5 py-2 backdrop-blur-xl">
+              <span className="creel-loader-dot h-2 w-2 shrink-0 rounded-full bg-cyan-100" />
+              <span className="creel-label text-cyan-50/75">Live Plot</span>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <div className="rounded-full border border-cyan-100/10 bg-[#03131f]/72 px-4 py-2 text-sm text-cyan-50/80 backdrop-blur-xl">
-                Reports from: {reportDateRange}
-              </div>
-              <div className="rounded-full border border-cyan-100/10 bg-[#03131f]/72 px-4 py-2 text-sm text-cyan-50/80 backdrop-blur-xl">
-                {reportCount.toLocaleString()} reports tracked
-              </div>
-              <div className="rounded-full border border-cyan-100/10 bg-[#03131f]/72 px-4 py-2 text-sm text-cyan-50/80 backdrop-blur-xl">
-                {rampCount.toLocaleString()} ramp beacons
-              </div>
-              <div className="rounded-full border border-cyan-100/10 bg-[#03131f]/72 px-4 py-2 text-sm text-cyan-50/80 backdrop-blur-xl">
-                {areaCount.toLocaleString()} marine sectors
-              </div>
+            <div className="rounded-full border border-cyan-100/10 bg-[#03131f]/80 px-3.5 py-2 text-sm text-cyan-50/80 backdrop-blur-xl">
+              {reportDateRange}
             </div>
           </div>
 
-          <div className="max-w-sm rounded-[1.5rem] border border-cyan-100/10 bg-[#03131f]/78 px-4 py-3 backdrop-blur-xl">
-            <p className="text-[0.65rem] font-medium uppercase tracking-[0.35em] text-cyan-100/50">
-              Active Focus
-            </p>
+          <div className="hidden max-w-sm rounded-[1.25rem] border border-cyan-100/10 bg-[#03131f]/82 px-4 py-3.5 backdrop-blur-xl lg:block">
+            <p className="creel-label text-cyan-100/55">Active Focus</p>
             <p className="mt-2 text-sm leading-6 text-cyan-50/82">
               {focusLabel}
             </p>
@@ -147,12 +131,13 @@ export default function MapDisplay({ reports }) {
         </div>
 
         <div className="relative overflow-hidden rounded-[1.5rem] border border-cyan-100/10">
-          <div className="relative h-[68vh] min-h-[34rem] w-full">
+          <div className="relative h-[64svh] min-h-[26rem] w-full sm:h-[64vh] sm:min-h-[30rem] lg:h-[68vh] lg:min-h-[34rem]">
             <Map
               ref={mapRef}
               {...viewport}
               mapStyle="mapbox://styles/mapbox/dark-v11"
               mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+              cooperativeGestures={cooperativeGestures}
               onMoveEnd={(evt) => setViewport(evt.viewState)}
               interactiveLayerIds={["marine-fill"]}
               onMouseMove={(evt) => {
@@ -244,14 +229,12 @@ export default function MapDisplay({ reports }) {
                   anchor="bottom"
                   offset={[0, -12]}
                 >
-                  <div className="p-4">
-                    <p className="text-[0.65rem] font-medium uppercase tracking-[0.35em] text-cyan-100/50">
-                      Marine Area
-                    </p>
+                  <div className="px-5 py-4">
+                    <p className="creel-label text-cyan-100/55">Marine Area</p>
                     <h3 className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white">
                       Area {areaInfo.props.maNumber}
                     </h3>
-                    <p className="mt-1 text-sm leading-6 text-cyan-50/70">
+                    <p className="mt-1.5 text-sm leading-6 text-cyan-50/70">
                       {areaInfo.props.maName}
                     </p>
                   </div>
@@ -259,24 +242,34 @@ export default function MapDisplay({ reports }) {
               )}
             </Map>
 
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-[#020b12] via-[#020b12]/48 to-transparent" />
-            <div className="pointer-events-none absolute bottom-4 left-4 z-10 max-w-xs rounded-[1.5rem] border border-cyan-100/10 bg-[#03131f]/74 px-4 py-3 backdrop-blur-xl">
-              <p className="text-[0.65rem] font-medium uppercase tracking-[0.35em] text-cyan-100/50">
-                Scan Notes
-              </p>
-              <p className="mt-2 text-sm leading-6 text-cyan-50/72">
-                Click glowing marine sectors to inspect their catch reports, or
-                tap a beacon marker to isolate one launch ramp.
-              </p>
-            </div>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-[#020b12] via-[#020b12]/48 to-transparent sm:h-28" />
+
+            {/* The hint retires once the reader has made a selection, handing the
+                bottom of the map back to the report drawer. */}
+            {!selectedReportSet && (
+              <div className="pointer-events-none absolute inset-x-4 bottom-4 z-10 rounded-full border border-cyan-100/10 bg-[#03131f]/82 px-4 py-3 text-center backdrop-blur-xl sm:inset-x-auto sm:bottom-5 sm:left-5 sm:max-w-xs sm:rounded-[1.5rem] sm:px-5 sm:py-4 sm:text-left">
+                <p className="creel-label hidden text-cyan-100/55 sm:block">
+                  Scan Notes
+                </p>
+                <p className="text-sm leading-6 text-cyan-50/75 sm:mt-2">
+                  <span className="sm:hidden">
+                    Tap a sector or beacon to open reports
+                  </span>
+                  <span className="hidden sm:inline">
+                    Tap a glowing marine sector for its catch reports, or a
+                    beacon marker to isolate one launch ramp.
+                  </span>
+                </p>
+              </div>
+            )}
           </div>
         </div>
-
-        <RampReports
-          selectedReportSet={selectedReportSet}
-          setSelectedReportSet={setSelectedReportSet}
-        />
       </div>
+
+      <RampReports
+        selectedReportSet={selectedReportSet}
+        setSelectedReportSet={setSelectedReportSet}
+      />
     </div>
   );
 }
