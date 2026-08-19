@@ -54,8 +54,8 @@ export default function YearCompare({ compare }) {
   const windowDays = compareData?.windowDays ?? 14;
 
   return (
-    <div className="space-y-5">
-      <p className="text-sm leading-7 text-cyan-50/70">
+    <div className="space-y-5 md:space-y-3.5">
+      <p className="text-sm leading-7 text-cyan-50/70 md:text-xs md:leading-5">
         Same last {windowDays} days vs prior years. Quickly see whether fish
         were being caught here at this time in past seasons.
       </p>
@@ -73,7 +73,7 @@ export default function YearCompare({ compare }) {
       )}
 
       {!compareLoading && !compareError && (
-        <ul className="space-y-3.5">
+        <ul className="space-y-3.5 md:space-y-2.5">
           {(compareData?.years || []).map((yearRow) => {
             const meta = STATUS_META[yearRow.status] ?? STATUS_META.no_surveys;
             const windowLabel = formatWindow(
@@ -87,22 +87,22 @@ export default function YearCompare({ compare }) {
             return (
               <li
                 key={yearRow.year}
-                className="rounded-[1.4rem] border border-cyan-100/10 bg-[linear-gradient(180deg,rgba(9,31,48,0.72),rgba(3,15,24,0.9))] px-5 py-5"
+                className="rounded-[1.4rem] border border-cyan-100/10 bg-[linear-gradient(180deg,rgba(9,31,48,0.72),rgba(3,15,24,0.9))] px-5 py-5 md:rounded-[1.1rem] md:px-3.5 md:py-3.5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2.5">
                   <div className="min-w-0">
-                    <p className="text-xl font-semibold tracking-[-0.03em] text-white tabular-nums">
+                    <p className="text-xl font-semibold tracking-[-0.03em] text-white tabular-nums md:text-base">
                       {yearRow.year}
                     </p>
                     {windowLabel && (
-                      <p className="mt-1.5 text-sm text-cyan-100/50">
+                      <p className="mt-1.5 text-sm text-cyan-100/50 md:mt-1 md:text-xs">
                         {windowLabel}
                       </p>
                     )}
                   </div>
 
                   <span
-                    className={`inline-flex shrink-0 items-center gap-2 rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-2 text-sm font-medium ${meta.textClass}`}
+                    className={`inline-flex shrink-0 items-center gap-2 rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-2 text-sm font-medium md:gap-1.5 md:px-2.5 md:py-1 md:text-xs ${meta.textClass}`}
                   >
                     <span
                       className={`h-2 w-2 shrink-0 rounded-full ${meta.dotClass}`}
@@ -112,7 +112,7 @@ export default function YearCompare({ compare }) {
                 </div>
 
                 {yearRow.status !== "no_surveys" && (
-                  <div className="mt-4 grid grid-cols-3 gap-2.5">
+                  <div className="mt-4 grid grid-cols-3 gap-2.5 md:mt-3 md:gap-2">
                     {[
                       { label: "Fish", value: yearRow.totalFish },
                       { label: "Anglers", value: yearRow.anglers },
@@ -120,12 +120,12 @@ export default function YearCompare({ compare }) {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="rounded-[1rem] border border-cyan-100/10 bg-[#03131f]/70 px-3 py-3"
+                        className="rounded-[1rem] border border-cyan-100/10 bg-[#03131f]/70 px-3 py-3 md:rounded-[0.9rem] md:px-2.5 md:py-2.5"
                       >
                         <p className="creel-label text-cyan-100/50">
                           {item.label}
                         </p>
-                        <p className="mt-1.5 text-lg font-semibold tracking-[-0.03em] text-white tabular-nums">
+                        <p className="mt-1.5 text-lg font-semibold tracking-[-0.03em] text-white tabular-nums md:mt-1 md:text-base">
                           {Number(item.value || 0).toLocaleString()}
                         </p>
                       </div>
@@ -134,11 +134,11 @@ export default function YearCompare({ compare }) {
                 )}
 
                 {speciesEntries.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="mt-4 flex flex-wrap gap-2 md:mt-3 md:gap-1.5">
                     {speciesEntries.map(([species, total]) => (
                       <div
                         key={species}
-                        className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-1.5 text-sm text-cyan-50/80"
+                        className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-1.5 text-sm text-cyan-50/80 md:px-2.5 md:py-1 md:text-xs"
                       >
                         <span className="font-medium text-white">{species}</span>{" "}
                         {total.toLocaleString()}

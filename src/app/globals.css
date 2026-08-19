@@ -93,9 +93,12 @@ body {
     padding-bottom: max(var(--space-panel), env(safe-area-inset-bottom));
   }
 
+  /* Carries the page gutter as well as the notch inset. These are one utility
+     because a bare safe-area rule outranks Tailwind's `px-*` and flattened the
+     gutter to zero on every screen without a notch. */
   .creel-safe-inline {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+    padding-left: max(var(--space-gutter), env(safe-area-inset-left));
+    padding-right: max(var(--space-gutter), env(safe-area-inset-right));
   }
 
   .creel-no-scrollbar {
@@ -108,31 +111,35 @@ body {
 }
 
 /* Small uppercase labels. The previous inline values combined ~9px type with
-   up to 0.65em tracking, which read as noise and wrapped badly on phones. */
-.creel-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.creel-eyebrow {
-  font-size: 0.72rem;
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-}
-
-@media (min-width: 640px) {
+   up to 0.65em tracking, which read as noise and wrapped badly on phones.
+   These live in the components layer so a `text-*`/`tracking-*` utility on the
+   element still wins where a denser label is needed. */
+@layer components {
   .creel-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.22em;
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
   .creel-eyebrow {
-    letter-spacing: 0.38em;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 640px) {
+    .creel-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+    }
+
+    .creel-eyebrow {
+      letter-spacing: 0.38em;
+    }
   }
 }
 

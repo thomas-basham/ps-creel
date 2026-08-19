@@ -29,36 +29,36 @@ export default function ReportCard({ report }) {
       }).format(sampleDate);
 
   return (
-    <li className="rounded-[1.35rem] border border-cyan-100/10 bg-[linear-gradient(180deg,rgba(9,31,48,0.76),rgba(3,15,24,0.92))] p-5 shadow-[0_18px_45px_rgba(0,0,0,0.24)]">
+    <li className="rounded-[1.35rem] border border-cyan-100/10 bg-[linear-gradient(180deg,rgba(9,31,48,0.76),rgba(3,15,24,0.92))] p-5 shadow-[0_18px_45px_rgba(0,0,0,0.24)] md:rounded-[1.1rem] md:p-3.5">
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <div>
           <p className="creel-label text-cyan-100/50">Sample Date</p>
-          <h3 className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white">
+          <h3 className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white md:mt-1 md:text-base">
             {formattedSampleDate}
           </h3>
         </div>
-        <div className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-1.5 text-sm text-cyan-50/75">
+        <div className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-1.5 text-sm text-cyan-50/75 md:px-2.5 md:py-1 md:text-xs">
           {catchArea || "Area unknown"}
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr]">
-        <div className="rounded-[1.2rem] border border-cyan-100/10 bg-[#03131f]/70 px-4 py-4">
+      <div className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr] md:mt-3 md:gap-2">
+        <div className="rounded-[1.2rem] border border-cyan-100/10 bg-[#03131f]/70 px-4 py-4 md:rounded-[0.9rem] md:px-3 md:py-2.5">
           <p className="creel-label text-cyan-100/50">Anglers</p>
-          <p className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white tabular-nums">
+          <p className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white tabular-nums md:mt-1 md:text-lg">
             {Number(report?.Anglers || 0).toLocaleString()}
           </p>
         </div>
 
-        <div className="rounded-[1.2rem] border border-cyan-100/10 bg-[#03131f]/58 px-4 py-4">
+        <div className="rounded-[1.2rem] border border-cyan-100/10 bg-[#03131f]/58 px-4 py-4 md:rounded-[0.9rem] md:px-3 md:py-2.5">
           <p className="creel-label text-cyan-100/50">Catch Breakdown</p>
 
           {catches.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2 md:mt-2 md:gap-1.5">
               {catches.map((entry) => (
                 <div
                   key={entry.species}
-                  className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-1.5 text-sm text-cyan-50/80"
+                  className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-1.5 text-sm text-cyan-50/80 md:px-2.5 md:py-1 md:text-xs"
                 >
                   <span className="font-medium text-white">
                     {entry.species}
@@ -68,7 +68,7 @@ export default function ReportCard({ report }) {
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm leading-6 text-cyan-50/55">
+            <p className="mt-3 text-sm leading-6 text-cyan-50/55 md:mt-2 md:text-xs md:leading-5">
               No retained catch recorded for this survey.
             </p>
           )}
@@ -76,7 +76,7 @@ export default function ReportCard({ report }) {
       </div>
 
       {report?.Ramp_site && (
-        <p className="mt-5 text-sm leading-6 text-cyan-50/45">
+        <p className="mt-5 text-sm leading-6 text-cyan-50/45 md:mt-3 md:text-xs md:leading-5">
           Launch {report.Ramp_site}
         </p>
       )}

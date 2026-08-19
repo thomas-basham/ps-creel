@@ -176,12 +176,12 @@ export default function MapDisplay({ reports }) {
   }, [expanded]);
 
   return (
-    <div className="relative flex w-full flex-1">
+    <div className="relative flex w-full flex-1 lg:min-h-0">
       <div
         ref={frameRef}
-        className={`creel-surface-strong relative w-full overflow-hidden ${
+        className={`creel-surface-strong relative flex w-full flex-col overflow-hidden ${
           expanded
-            ? "fixed inset-0 z-50 flex flex-col rounded-none p-3"
+            ? "fixed inset-0 z-50 rounded-none p-3"
             : "rounded-[1.75rem] p-2 sm:rounded-[2rem] sm:p-3"
         }`}
       >
@@ -239,14 +239,16 @@ export default function MapDisplay({ reports }) {
 
         <div
           className={`relative overflow-hidden border border-cyan-100/10 ${
-            expanded ? "h-full flex-1 rounded-[1.25rem]" : "rounded-[1.5rem]"
+            expanded
+              ? "h-full min-h-0 flex-1 rounded-[1.25rem]"
+              : "rounded-[1.5rem] lg:min-h-0 lg:flex-1"
           }`}
         >
           <div
             className={`relative w-full ${
               expanded
                 ? "h-full"
-                : "h-[70svh] min-h-[26rem] sm:min-h-[30rem] lg:h-[calc(100svh-15rem)] lg:min-h-[38rem]"
+                : "h-[70svh] min-h-[26rem] sm:min-h-[30rem] lg:h-full lg:min-h-0"
             }`}
           >
             <Map

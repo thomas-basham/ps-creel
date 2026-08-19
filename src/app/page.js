@@ -110,38 +110,48 @@ export default function Home() {
         style={{ animationDelay: "-2.4s" }}
       />
 
-      <main className="creel-section-gap creel-safe-inline relative z-10 mx-auto flex min-h-screen w-full max-w-[112rem] flex-col px-4 py-6 sm:px-6 sm:py-8 xl:px-8">
-        <header className="creel-surface rounded-[1.75rem] p-5 sm:rounded-[2rem] sm:p-6 xl:p-7">
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-3 rounded-full border border-cyan-100/10 bg-white/5 px-4 py-2.5">
-                <span className="creel-loader-dot h-2 w-2 shrink-0 rounded-full bg-cyan-100" />
-                <span className="creel-label text-cyan-50/75">
-                  Live Marine Dashboard
-                </span>
-              </div>
-              <h1 className="text-2xl font-semibold leading-[1.1] tracking-[-0.04em] text-white sm:text-3xl xl:text-4xl">
-                Explore the Sound creel data in a new way.
-              </h1>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 xl:w-auto">
-              {summaryItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="creel-metric-card flex flex-col justify-between gap-1.5 rounded-[1.1rem] px-3.5 py-3 sm:rounded-[1.25rem] sm:px-4 sm:py-3.5 xl:min-w-[8rem]"
-                >
-                  <p className="creel-label text-cyan-100/55">{item.label}</p>
-                  <p className="text-lg font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-xl">
-                    {item.value}
-                  </p>
+      <main className="creel-section-gap creel-safe-inline relative z-10 mx-auto flex min-h-screen w-full max-w-[112rem] flex-col py-6 sm:py-8">
+        {/* From `lg` up the header and map together fill exactly one viewport so
+            the plot reads as the primary surface and the copy below sits past
+            the fold. The subtracted rem matches this element's vertical
+            padding. */}
+        <div className="creel-section-gap flex flex-col lg:h-[calc(100svh-4rem)] lg:min-h-[34rem]">
+          <header className="creel-surface shrink-0 rounded-[1.75rem] p-5 sm:rounded-[2rem] lg:p-4 xl:p-5">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+              <div className="space-y-3 lg:space-y-2">
+                <div className="inline-flex items-center gap-3 rounded-full border border-cyan-100/10 bg-white/5 px-4 py-2.5 lg:gap-2.5 lg:px-3.5 lg:py-2">
+                  <span className="creel-loader-dot h-2 w-2 shrink-0 rounded-full bg-cyan-100" />
+                  <span className="creel-label text-cyan-50/75">
+                    Live Marine Dashboard
+                  </span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </header>
+                {/* The heading shares a row with the metrics from `lg` up, so it
+                    steps up only once there is width to keep it on one line. */}
+                <h1 className="text-2xl font-semibold leading-[1.1] tracking-[-0.04em] text-white sm:text-3xl lg:whitespace-nowrap lg:text-2xl 2xl:text-3xl min-[2200px]:text-4xl">
+                  Explore the Sound creel data in a new way.
+                </h1>
+              </div>
 
-        <MapDisplay reports={reportList} />
+              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:w-auto lg:gap-2.5">
+                {summaryItems.map((item) => (
+                  <div
+                    key={item.label}
+                    className="creel-metric-card flex flex-col justify-between gap-1.5 rounded-[1.1rem] px-3.5 py-3 sm:rounded-[1.25rem] sm:px-4 sm:py-3.5 lg:min-w-[6.5rem] lg:gap-1 lg:px-3 lg:py-2.5 xl:min-w-[7.25rem]"
+                  >
+                    <p className="creel-label text-cyan-100/55 lg:text-[0.68rem] lg:tracking-[0.12em]">
+                      {item.label}
+                    </p>
+                    <p className="text-lg font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-xl lg:text-base xl:text-lg">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </header>
+
+          <MapDisplay reports={reportList} />
+        </div>
 
         <section className="grid grid-cols-1 gap-[inherit] xl:grid-cols-2">
           <div className="creel-surface rounded-[1.75rem] p-6 sm:rounded-[2rem] sm:p-8">
