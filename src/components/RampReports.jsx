@@ -96,10 +96,11 @@ export default function RampReports({
     // reachable no matter where the reader has scrolled the page. From `md` up
     // it docks inside the map frame as a side panel, sized so it never eats
     // more than roughly half the map.
-    <div className="fixed inset-x-0 bottom-0 z-30 md:absolute md:inset-x-auto md:bottom-6 md:left-6 md:z-20 md:w-[21rem] lg:w-[25rem] xl:w-[28rem]">
-      {/* The docked cap is tied to the map's own height so the panel can never
-          grow past the top of the map frame. */}
-      <div className="creel-surface-strong flex max-h-[80svh] flex-col overflow-hidden rounded-t-[1.75rem] md:max-h-[calc(64vh-1.5rem)] md:rounded-[1.75rem] lg:max-h-[calc(68vh-1.5rem)]">
+    <div className="fixed inset-x-0 bottom-0 z-30 md:absolute md:inset-x-auto md:bottom-6 md:left-6 md:top-24 md:z-20 md:flex md:w-[22rem] md:flex-col md:justify-end lg:w-[26rem] xl:w-[30rem]">
+      {/* The docked panel is bounded by the map frame itself (top-24/bottom-6),
+          so it scales with the map at any height, fullscreen included, and can
+          never grow past the top of the frame. */}
+      <div className="creel-surface-strong flex max-h-[80svh] flex-col overflow-hidden rounded-t-[1.75rem] md:max-h-full md:rounded-[1.75rem]">
         <button
           type="button"
           onClick={() => setCollapsed((value) => !value)}

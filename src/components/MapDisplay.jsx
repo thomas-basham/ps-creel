@@ -1,7 +1,7 @@
 // src/components/MapDisplay.jsx
 "use client";
 
-import React, { useState, useMemo, useCallback, useRef } from "react";
+import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import Map, { NavigationControl, Popup } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import _ from "lodash";
@@ -37,7 +37,13 @@ const prefersCooperativeGestures = () =>
 
 export default function MapDisplay({ reports }) {
   const mapRef = useRef(null);
+  const frameRef = useRef(null);
   const [cooperativeGestures] = useState(prefersCooperativeGestures);
+  // `fullscreen` tracks the native Fullscreen API; `fallbackExpanded` is the
+  // in-page overlay used where that API is unavailable (notably iOS Safari).
+  const [fullscreen, setFullscreen] = useState(false);
+  const [fallbackExpanded, setFallbackExpanded] = useState(false);
+  const expanded = fullscreen || fallbackExpanded;
   const reportList = useMemo(
     () => (Array.isArray(reports) ? reports : []),
     [reports]
@@ -102,9 +108,83 @@ export default function MapDisplay({ reports }) {
       }`
     : "Select a marine area or ramp to inspect survey details";
 
+  const toggleFullscreen = useCallback(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+
+    const isNativeFullscreen =
+      document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (isNativeFullscreen) {
+      (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+      return;
+    }
+
+    const request = frame.requestFullscreen || frame.webkitRequestFullscreen;
+
+    if (request) {
+      request.call(frame);
+    } else {
+      // No Fullscreen API (iOS Safari): fall back to an in-page fixed overlay.
+      setFallbackExpanded((value) => !value);
+    }
+  }, []);
+
+  // Keep local state in sync with the browser so the Escape key and native
+  // fullscreen chrome flip the button back without our intervention.
+  useEffect(() => {
+    const syncFullscreen = () => {
+      setFullscreen(
+        Boolean(document.fullscreenElement || document.webkitFullscreenElement)
+      );
+    };
+
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    document.addEventListener("webkitfullscreenchange", syncFullscreen);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreen);
+      document.removeEventListener("webkitfullscreenchange", syncFullscreen);
+    };
+  }, []);
+
+  // The fallback overlay has no native chrome, so wire up Escape and lock the
+  // page scroll behind it.
+  useEffect(() => {
+    if (!fallbackExpanded) return;
+
+    const onKeyDown = (evt) => {
+      if (evt.key === "Escape") setFallbackExpanded(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.body.classList.add("creel-map-locked");
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.classList.remove("creel-map-locked");
+    };
+  }, [fallbackExpanded]);
+
+  // Mapbox needs a nudge to re-measure once the frame changes size.
+  useEffect(() => {
+    const map = mapRef.current?.getMap?.();
+    if (!map) return;
+
+    const frame = requestAnimationFrame(() => map.resize());
+    return () => cancelAnimationFrame(frame);
+  }, [expanded]);
+
   return (
-    <div className="relative w-full xl:col-span-2">
-      <div className="creel-surface-strong relative overflow-hidden rounded-[1.75rem] p-2 sm:rounded-[2rem] sm:p-3">
+    <div className="relative flex w-full flex-1">
+      <div
+        ref={frameRef}
+        className={`creel-surface-strong relative w-full overflow-hidden ${
+          expanded
+            ? "fixed inset-0 z-50 flex flex-col rounded-none p-3"
+            : "rounded-[1.75rem] p-2 sm:rounded-[2rem] sm:p-3"
+        }`}
+      >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(83,196,255,0.12),_transparent_34%),linear-gradient(180deg,_rgba(255,255,255,0.03),_transparent_24%,_rgba(0,0,0,0.18)_100%)]" />
 
         {/* Only the survey window lives over the map. The report, ramp, and area
@@ -122,16 +202,53 @@ export default function MapDisplay({ reports }) {
             </div>
           </div>
 
-          <div className="hidden max-w-sm rounded-[1.25rem] border border-cyan-100/10 bg-[#03131f]/82 px-4 py-3.5 backdrop-blur-xl lg:block">
-            <p className="creel-label text-cyan-100/55">Active Focus</p>
-            <p className="mt-2 text-sm leading-6 text-cyan-50/82">
-              {focusLabel}
-            </p>
+          <div className="ml-auto flex items-start gap-2.5 sm:gap-3">
+            <div className="hidden max-w-sm rounded-[1.25rem] border border-cyan-100/10 bg-[#03131f]/82 px-4 py-3.5 backdrop-blur-xl lg:block">
+              <p className="creel-label text-cyan-100/55">Active Focus</p>
+              <p className="mt-2 text-sm leading-6 text-cyan-50/82">
+                {focusLabel}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              aria-pressed={expanded}
+              aria-label={expanded ? "Exit fullscreen" : "Enter fullscreen"}
+              className="pointer-events-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cyan-100/10 bg-[#03131f]/80 text-cyan-50/80 backdrop-blur-xl transition hover:border-cyan-100/30 hover:bg-[#03131f] hover:text-white"
+            >
+              <svg
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {expanded ? (
+                  <path d="M3 7h4V3M17 7h-4V3M17 13h-4v4M3 13h4v4" />
+                ) : (
+                  <path d="M7 3H3v4M13 3h4v4M13 17h4v-4M7 17H3v-4" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[1.5rem] border border-cyan-100/10">
-          <div className="relative h-[64svh] min-h-[26rem] w-full sm:h-[64vh] sm:min-h-[30rem] lg:h-[68vh] lg:min-h-[34rem]">
+        <div
+          className={`relative overflow-hidden border border-cyan-100/10 ${
+            expanded ? "h-full flex-1 rounded-[1.25rem]" : "rounded-[1.5rem]"
+          }`}
+        >
+          <div
+            className={`relative w-full ${
+              expanded
+                ? "h-full"
+                : "h-[70svh] min-h-[26rem] sm:min-h-[30rem] lg:h-[calc(100svh-15rem)] lg:min-h-[38rem]"
+            }`}
+          >
             <Map
               ref={mapRef}
               {...viewport}

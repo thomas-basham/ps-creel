@@ -51,6 +51,22 @@ body {
   color: #ffffff;
 }
 
+/* While the in-page fullscreen fallback overlay is open, lock the page so it
+   cannot scroll behind the map. */
+.creel-map-locked {
+  overflow: hidden;
+}
+
+/* Native fullscreen paints the browser's default background behind our frame;
+   match it to the app background so nothing flashes through. */
+:fullscreen {
+  background: var(--background);
+}
+
+::backdrop {
+  background: var(--background);
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -409,6 +425,13 @@ body {
 
   .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-group {
     display: none !important;
+  }
+
+  /* Fullscreen (native or fallback) has room again, so bring the zoom
+     controls back. */
+  :fullscreen .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-group,
+  .creel-map-locked .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-group {
+    display: block !important;
   }
 }
 

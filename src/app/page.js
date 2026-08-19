@@ -110,93 +110,99 @@ export default function Home() {
         style={{ animationDelay: "-2.4s" }}
       />
 
-      <main className="creel-section-gap creel-safe-inline relative z-10 mx-auto grid min-h-screen w-full max-w-[92rem] grid-cols-1 content-start px-4 py-6 sm:px-6 sm:py-8 xl:grid-cols-[1.35fr_0.65fr] xl:px-8">
-        <section className="creel-surface rounded-[1.75rem] p-6 sm:rounded-[2rem] sm:p-8 xl:p-10">
-          <div className="inline-flex items-center gap-3 rounded-full border border-cyan-100/10 bg-white/5 px-4 py-2.5">
-            <span className="creel-loader-dot h-2 w-2 shrink-0 rounded-full bg-cyan-100" />
-            <span className="creel-label text-cyan-50/75">
-              Live Marine Dashboard
-            </span>
-          </div>
+      <main className="creel-section-gap creel-safe-inline relative z-10 mx-auto flex min-h-screen w-full max-w-[112rem] flex-col px-4 py-6 sm:px-6 sm:py-8 xl:px-8">
+        <header className="creel-surface rounded-[1.75rem] p-5 sm:rounded-[2rem] sm:p-6 xl:p-7">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-3 rounded-full border border-cyan-100/10 bg-white/5 px-4 py-2.5">
+                <span className="creel-loader-dot h-2 w-2 shrink-0 rounded-full bg-cyan-100" />
+                <span className="creel-label text-cyan-50/75">
+                  Live Marine Dashboard
+                </span>
+              </div>
+              <h1 className="text-2xl font-semibold leading-[1.1] tracking-[-0.04em] text-white sm:text-3xl xl:text-4xl">
+                Explore the Sound creel data in a new way.
+              </h1>
+            </div>
 
-          <div className="mt-7 max-w-4xl space-y-5">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 xl:w-auto">
+              {summaryItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="creel-metric-card flex flex-col justify-between gap-1.5 rounded-[1.1rem] px-3.5 py-3 sm:rounded-[1.25rem] sm:px-4 sm:py-3.5 xl:min-w-[8rem]"
+                >
+                  <p className="creel-label text-cyan-100/55">{item.label}</p>
+                  <p className="text-lg font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-xl">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </header>
+
+        <MapDisplay reports={reportList} />
+
+        <section className="grid grid-cols-1 gap-[inherit] xl:grid-cols-2">
+          <div className="creel-surface rounded-[1.75rem] p-6 sm:rounded-[2rem] sm:p-8">
             <p className="creel-eyebrow text-cyan-100/55">Puget Sound Creel</p>
-            <h1 className="text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.04em] text-white sm:text-5xl sm:leading-[1.05] xl:text-[3.5rem]">
-              Explore the Sound creel data in a new way.
-            </h1>
-            <p className="max-w-3xl text-base leading-7 text-cyan-50/72 sm:leading-8">
+            <p className="mt-4 max-w-3xl text-base leading-7 text-cyan-50/72 sm:leading-8">
               This map turns survey reports into a single command deck for
               launch ramps, marine areas, and catch totals. Scan the water, open
               a zone, and inspect each sampling date like a live radar trace.
             </p>
           </div>
 
-          <div className="mt-9 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-            {summaryItems.map((item) => (
-              <div
-                key={item.label}
-                className="creel-metric-card flex flex-col justify-between gap-3 rounded-[1.25rem] px-4 py-5 sm:gap-4 sm:rounded-[1.5rem] sm:px-5 sm:py-6"
-              >
-                <p className="creel-label text-cyan-100/55">{item.label}</p>
-                <p className="text-[1.35rem] font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-2xl">
-                  {item.value}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+          <aside className="creel-surface-strong rounded-[1.75rem] p-6 sm:rounded-[2rem] sm:p-7 xl:p-8">
+            <div className="flex h-full flex-col gap-6">
+              <div className="space-y-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="creel-label text-cyan-100/55">
+                      Mission Briefing
+                    </p>
+                    <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">
+                      Read the water fast.
+                    </h2>
+                  </div>
 
-        <aside className="order-last creel-surface-strong rounded-[1.75rem] p-6 sm:rounded-[2rem] sm:p-7 xl:order-none xl:p-8">
-          <div className="flex h-full flex-col gap-6">
-            <div className="space-y-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="creel-label text-cyan-100/55">
-                    Mission Briefing
-                  </p>
-                  <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">
-                    Read the water fast.
-                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setBriefingOpen((open) => !open)}
+                    aria-expanded={briefingOpen}
+                    className="-mr-1 -mt-1 shrink-0 rounded-full border border-cyan-100/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-cyan-50/80 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white xl:hidden"
+                  >
+                    {briefingOpen ? "Hide" : "How it works"}
+                  </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setBriefingOpen((open) => !open)}
-                  aria-expanded={briefingOpen}
-                  className="-mr-1 -mt-1 shrink-0 rounded-full border border-cyan-100/12 bg-white/5 px-4 py-2.5 text-sm font-medium text-cyan-50/80 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white xl:hidden"
+                <div
+                  className={`${
+                    briefingOpen ? "space-y-4" : "hidden"
+                  } text-base leading-7 text-cyan-50/70 xl:block xl:space-y-4 xl:text-sm xl:leading-7`}
                 >
-                  {briefingOpen ? "Hide" : "How it works"}
-                </button>
+                  {briefingPoints.map((point) => (
+                    <p key={point}>{point}</p>
+                  ))}
+                </div>
               </div>
 
-              <div
-                className={`${
-                  briefingOpen ? "space-y-4" : "hidden"
-                } text-base leading-7 text-cyan-50/70 xl:block xl:space-y-4 xl:text-sm xl:leading-7`}
-              >
-                {briefingPoints.map((point) => (
-                  <p key={point}>{point}</p>
-                ))}
+              <div className="rounded-[1.25rem] border border-cyan-100/10 bg-white/5 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:rounded-[1.5rem] xl:mt-auto">
+                <p className="creel-label text-cyan-100/55">Active Window</p>
+                <p className="mt-3 text-lg font-medium tracking-[-0.01em] text-white">
+                  {formatDate(selectedDateRange.pastDate)} -{" "}
+                  {formatDate(selectedDateRange.recentDate)}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-cyan-50/60">
+                  Latest sampled report in the current payload:{" "}
+                  <span className="font-medium text-cyan-50/82">
+                    {latestReportLabel}
+                  </span>
+                </p>
               </div>
             </div>
-
-            <div className="rounded-[1.25rem] border border-cyan-100/10 bg-white/5 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:rounded-[1.5rem] xl:mt-auto">
-              <p className="creel-label text-cyan-100/55">Active Window</p>
-              <p className="mt-3 text-lg font-medium tracking-[-0.01em] text-white">
-                {formatDate(selectedDateRange.pastDate)} -{" "}
-                {formatDate(selectedDateRange.recentDate)}
-              </p>
-              <p className="mt-3 text-sm leading-6 text-cyan-50/60">
-                Latest sampled report in the current payload:{" "}
-                <span className="font-medium text-cyan-50/82">
-                  {latestReportLabel}
-                </span>
-              </p>
-            </div>
-          </div>
-        </aside>
-
-        <MapDisplay reports={reportList} />
+          </aside>
+        </section>
       </main>
     </div>
   );
