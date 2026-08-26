@@ -96,7 +96,7 @@ export default function RampReports({
     // reachable no matter where the reader has scrolled the page. From `md` up
     // it docks inside the map frame as a side panel, sized so it never eats
     // more than roughly half the map.
-    <div className="fixed inset-x-0 bottom-0 z-30 md:absolute md:inset-x-auto md:bottom-5 md:left-5 md:top-[5.5rem] md:z-20 md:flex md:w-[38%] md:min-w-[20rem] md:max-w-[30rem] md:flex-col md:justify-end lg:w-[32%] xl:w-[28%]">
+    <div className="fixed inset-x-0 bottom-0 z-30 md:absolute md:inset-x-auto md:bottom-4 md:left-4 md:top-16 md:z-20 md:flex md:w-[38%] md:min-w-[20rem] md:max-w-[30rem] md:flex-col md:justify-end lg:w-[32%] xl:w-[28%]">
       {/* The docked panel is bounded by the map frame itself, so it scales with
           the map at any height, fullscreen included, and can never grow past
           the top of the frame. Its width tracks the frame instead of a fixed
@@ -112,15 +112,17 @@ export default function RampReports({
           className="creel-sheet-handle w-full shrink-0 py-3.5 md:hidden"
         />
 
-        <div className="shrink-0 border-b border-cyan-100/10 px-5 pb-6 pt-1 sm:px-6 sm:pb-7 md:px-4 md:pb-5 md:pt-4">
+        <div className="shrink-0 border-b border-cyan-100/10 px-5 pb-6 pt-1 sm:px-6 sm:pb-7 md:px-3.5 md:pb-3.5 md:pt-3">
           <div className="flex items-start justify-between gap-4 md:gap-3">
             <div className="min-w-0">
-              <p className="creel-label text-cyan-100/55">Selection Lock</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl md:mt-1.5 md:text-lg">
+              <p className="creel-label text-cyan-100/55 md:text-[0.62rem]">
+                Selection Lock
+              </p>
+              <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl md:mt-1 md:text-base">
                 {selectedReportSet.title}
               </h2>
               {selectedReportSet.subtitle && (
-                <p className="mt-2 text-sm leading-6 text-cyan-50/70 md:mt-1 md:text-xs md:leading-5">
+                <p className="mt-2 text-sm leading-6 text-cyan-50/70 md:mt-0.5 md:text-xs md:leading-4">
                   {selectedReportSet.subtitle}
                 </p>
               )}
@@ -129,7 +131,7 @@ export default function RampReports({
             <button
               type="button"
               aria-label="Close report drawer"
-              className="-mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cyan-100/12 bg-white/5 text-cyan-50/75 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white md:-mr-0.5 md:h-8 md:w-8"
+              className="-mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cyan-100/12 bg-white/5 text-cyan-50/75 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white md:-mr-0.5 md:h-7 md:w-7"
               onClick={() => setSelectedReportSet(null)}
             >
               <svg
@@ -146,14 +148,16 @@ export default function RampReports({
             </button>
           </div>
 
-          <div className="mt-6 grid grid-cols-3 gap-2.5 sm:gap-3 md:mt-4 md:gap-2">
+          <div className="mt-6 grid grid-cols-3 gap-2.5 sm:gap-3 md:mt-2.5 md:gap-1.5">
             {summaryItems.map((item) => (
               <div
                 key={item.label}
-                className="creel-metric-card rounded-[1.1rem] px-3 py-3.5 sm:rounded-[1.2rem] sm:px-4 sm:py-4 md:rounded-[0.9rem] md:px-2.5 md:py-2.5"
+                className="creel-metric-card rounded-[1.1rem] px-3 py-3.5 sm:rounded-[1.2rem] sm:px-4 sm:py-4 md:rounded-[0.75rem] md:px-2 md:py-1.5"
               >
-                <p className="creel-label text-cyan-100/50">{item.label}</p>
-                <p className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-xl md:mt-1 md:text-base">
+                <p className="creel-label text-cyan-100/50 md:text-[0.62rem]">
+                  {item.label}
+                </p>
+                <p className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-xl md:mt-0.5 md:text-sm">
                   {item.value}
                 </p>
               </div>
@@ -161,11 +165,11 @@ export default function RampReports({
           </div>
 
           {speciesEntries.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2 md:mt-3 md:gap-1.5">
+            <div className="mt-5 flex flex-wrap gap-2 md:mt-2.5 md:gap-1">
               {speciesEntries.map(([species, total]) => (
                 <div
                   key={species}
-                  className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-2 text-sm text-cyan-50/80 md:px-2.5 md:py-1 md:text-xs"
+                  className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-2 text-sm text-cyan-50/80 md:px-2 md:py-0.5 md:text-[0.68rem]"
                 >
                   <span className="font-medium text-white">{species}</span>{" "}
                   {total.toLocaleString()}
@@ -175,7 +179,7 @@ export default function RampReports({
           )}
 
           {canCompare && (
-            <div className="mt-6 grid grid-cols-2 gap-1.5 rounded-full border border-cyan-100/10 bg-white/5 p-1.5 md:mt-4 md:gap-1 md:p-1">
+            <div className="mt-6 grid grid-cols-2 gap-1.5 rounded-full border border-cyan-100/10 bg-white/5 p-1.5 md:mt-2.5 md:gap-1 md:p-0.5">
               {[
                 { id: "current", label: "Current" },
                 { id: "compare", label: "Compare years" },
@@ -187,7 +191,7 @@ export default function RampReports({
                     type="button"
                     onClick={() => setActiveView(tab.id)}
                     aria-pressed={isActive}
-                    className={`rounded-full px-3 py-2.5 text-sm font-medium transition md:py-1.5 md:text-xs ${
+                    className={`rounded-full px-3 py-2.5 text-sm font-medium transition md:py-1 md:text-[0.68rem] ${
                       isActive
                         ? "bg-cyan-100/90 text-[#03111b]"
                         : "text-cyan-50/70 hover:text-white"
@@ -202,14 +206,14 @@ export default function RampReports({
         </div>
 
         <div
-          className={`creel-scrollbar creel-safe-bottom flex-1 overflow-y-auto px-5 pt-5 sm:px-6 sm:pt-6 md:px-4 md:pt-4 md:pb-4 ${
+          className={`creel-scrollbar creel-safe-bottom flex-1 overflow-y-auto px-5 pt-5 sm:px-6 sm:pt-6 md:px-3 md:pb-3 md:pt-3 ${
             collapsed ? "hidden md:block" : ""
           }`}
         >
           {activeView === "compare" && canCompare ? (
             <YearCompare compare={selectedReportSet.compare} />
           ) : selectedReports.length > 0 ? (
-            <ul className="space-y-3.5 md:space-y-2.5">
+            <ul className="space-y-3.5 md:space-y-2">
               {selectedReports.map((report, idx) => (
                 <ReportCard key={idx} report={report} />
               ))}

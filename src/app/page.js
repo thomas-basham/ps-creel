@@ -110,13 +110,13 @@ export default function Home() {
         style={{ animationDelay: "-2.4s" }}
       />
 
-      <main className="creel-section-gap creel-safe-inline relative z-10 mx-auto flex min-h-screen w-full max-w-[112rem] flex-col py-6 sm:py-8">
+      <main className="creel-section-gap creel-safe-inline relative z-10 mx-auto flex min-h-screen w-full max-w-[126rem] flex-col py-4 sm:py-5">
         {/* From `lg` up the header and map together fill exactly one viewport so
             the plot reads as the primary surface and the copy below sits past
             the fold. The subtracted rem matches this element's vertical
             padding. */}
-        <div className="creel-section-gap flex flex-col lg:h-[calc(100svh-4rem)] lg:min-h-[34rem]">
-          <header className="creel-surface shrink-0 rounded-[1.75rem] p-5 sm:rounded-[2rem] lg:p-4 xl:p-5">
+        <div className="creel-section-gap flex flex-col lg:h-[calc(100svh-2.5rem)] lg:min-h-[34rem]">
+          <header className="creel-surface shrink-0 rounded-[1.75rem] p-5 sm:rounded-[2rem] lg:rounded-[1.5rem] lg:p-3 xl:p-3.5">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
               <div className="space-y-3 lg:space-y-2">
                 <div className="inline-flex items-center gap-3 rounded-full border border-cyan-100/10 bg-white/5 px-4 py-2.5 lg:gap-2.5 lg:px-3.5 lg:py-2">
@@ -136,7 +136,7 @@ export default function Home() {
                 {summaryItems.map((item) => (
                   <div
                     key={item.label}
-                    className="creel-metric-card flex flex-col justify-between gap-1.5 rounded-[1.1rem] px-3.5 py-3 sm:rounded-[1.25rem] sm:px-4 sm:py-3.5 lg:min-w-[6.5rem] lg:gap-1 lg:px-3 lg:py-2.5 xl:min-w-[7.25rem]"
+                    className="creel-metric-card flex flex-col justify-between gap-1.5 rounded-[1.1rem] px-3.5 py-3 sm:rounded-[1.25rem] sm:px-4 sm:py-3.5 lg:min-w-[6.5rem] lg:gap-0.5 lg:rounded-[0.9rem] lg:px-3 lg:py-2 xl:min-w-[7.25rem]"
                   >
                     <p className="creel-label text-cyan-100/55 lg:text-[0.68rem] lg:tracking-[0.12em]">
                       {item.label}

@@ -15,25 +15,35 @@
 
 @media (min-width: 640px) {
   :root {
-    --space-gutter: 1.5rem;
+    --space-gutter: 1.25rem;
     --space-stack: 1.5rem;
-    --space-panel: 2rem;
-    --space-section: 2.25rem;
+    --space-panel: 1.75rem;
+    --space-section: 1.5rem;
   }
 }
 
 @media (min-width: 1280px) {
   :root {
-    --space-gutter: 2rem;
+    --space-gutter: 1.5rem;
     --space-stack: 1.75rem;
-    --space-panel: 2.25rem;
-    --space-section: 2.5rem;
+    --space-panel: 2rem;
+    --space-section: 1.75rem;
   }
 }
 
 html {
   background: var(--background);
   -webkit-text-size-adjust: 100%;
+}
+
+/* Desktop runs a smaller root size so every rem-based measurement (type,
+   padding, radii, panel widths) scales down together. This keeps the compact
+   HUD density without re-tuning each component, while phones and the tablet
+   bottom sheet keep the default 16px for touch legibility. */
+@media (min-width: 1024px) {
+  html {
+    font-size: 14px;
+  }
 }
 
 body {
@@ -88,9 +98,13 @@ body {
     padding: var(--space-panel);
   }
 
-  /* Keeps content clear of the home indicator and notch on iOS. */
-  .creel-safe-bottom {
-    padding-bottom: max(var(--space-panel), env(safe-area-inset-bottom));
+  /* Keeps content clear of the home indicator and notch on iOS. Only the
+     viewport-pinned bottom sheet (below md) needs the inset; from md up the
+     drawer docks inside the map frame, so a `pb-*` utility takes over. */
+  @media (max-width: 767px) {
+    .creel-safe-bottom {
+      padding-bottom: max(var(--space-panel), env(safe-area-inset-bottom));
+    }
   }
 
   /* Carries the page gutter as well as the notch inset. These are one utility
