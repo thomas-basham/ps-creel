@@ -71,10 +71,10 @@ export default function RampReports({
   const totalFishCaught = getTotalFishCaught(totalSpeciesCaught);
   const totalAnglers = selectedReports.reduce(
     (sum, report) => sum + Number(report.Anglers || 0),
-    0
+    0,
   );
   const speciesEntries = Object.entries(totalSpeciesCaught).filter(
-    ([, total]) => total > 0
+    ([, total]) => total > 0,
   );
   const summaryItems = [
     {
@@ -101,7 +101,7 @@ export default function RampReports({
           the map at any height, fullscreen included, and can never grow past
           the top of the frame. Its width tracks the frame instead of a fixed
           column so the map keeps the same share of the surface on any display. */}
-      <div className="creel-surface-strong flex max-h-[80svh] flex-col overflow-hidden rounded-t-[1.75rem] md:max-h-full md:rounded-[1.5rem]">
+      <div className="creel-surface-strong flex max-h-[88svh] flex-col overflow-hidden rounded-t-[1.75rem] md:max-h-full md:rounded-[1.5rem]">
         <button
           type="button"
           onClick={() => setCollapsed((value) => !value)}
@@ -112,117 +112,123 @@ export default function RampReports({
           className="creel-sheet-handle w-full shrink-0 py-3.5 md:hidden"
         />
 
-        <div className="shrink-0 border-b border-cyan-100/10 px-5 pb-6 pt-1 sm:px-6 sm:pb-7 md:px-3.5 md:pb-3.5 md:pt-3">
-          <div className="flex items-start justify-between gap-4 md:gap-3">
-            <div className="min-w-0">
-              <p className="creel-label text-cyan-100/55 md:text-[0.62rem]">
-                Selection Lock
-              </p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl md:mt-1 md:text-base">
-                {selectedReportSet.title}
-              </h2>
-              {selectedReportSet.subtitle && (
-                <p className="mt-2 text-sm leading-6 text-cyan-50/70 md:mt-0.5 md:text-xs md:leading-4">
-                  {selectedReportSet.subtitle}
+        {/* Below `md` this wrapper is the single scroll surface, so the summary
+            header scrolls out of the way and the report cards can use the whole
+            sheet. From `md` up it turns back into a flex column with a pinned
+            header and an inner scrolling list. */}
+        <div className="creel-scrollbar min-h-0 flex-1 overflow-y-auto md:flex md:flex-col md:overflow-visible">
+          <div className="shrink-0 border-b border-cyan-100/10 px-5 pb-4 pt-1 sm:px-6 sm:pb-5 md:px-3.5 md:pb-3.5 md:pt-3">
+            <div className="flex items-start justify-between gap-4 md:gap-3">
+              <div className="min-w-0">
+                <p className="creel-label text-cyan-100/55 md:text-[0.62rem]">
+                  Selection Lock
                 </p>
-              )}
+                <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl md:mt-1 md:text-base">
+                  {selectedReportSet.title}
+                </h2>
+                {selectedReportSet.subtitle && (
+                  <p className="mt-2 text-sm leading-6 text-cyan-50/70 md:mt-0.5 md:text-xs md:leading-4">
+                    {selectedReportSet.subtitle}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                aria-label="Close report drawer"
+                className="-mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cyan-100/12 bg-white/5 text-cyan-50/75 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white md:-mr-0.5 md:h-7 md:w-7"
+                onClick={() => setSelectedReportSet(null)}
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                >
+                  <path d="M5 5l10 10M15 5L5 15" />
+                </svg>
+              </button>
             </div>
 
-            <button
-              type="button"
-              aria-label="Close report drawer"
-              className="-mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cyan-100/12 bg-white/5 text-cyan-50/75 transition hover:border-cyan-100/30 hover:bg-white/10 hover:text-white md:-mr-0.5 md:h-7 md:w-7"
-              onClick={() => setSelectedReportSet(null)}
-            >
-              <svg
-                viewBox="0 0 20 20"
-                aria-hidden="true"
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              >
-                <path d="M5 5l10 10M15 5L5 15" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="mt-6 grid grid-cols-3 gap-2.5 sm:gap-3 md:mt-2.5 md:gap-1.5">
-            {summaryItems.map((item) => (
-              <div
-                key={item.label}
-                className="creel-metric-card rounded-[1.1rem] px-3 py-3.5 sm:rounded-[1.2rem] sm:px-4 sm:py-4 md:rounded-[0.75rem] md:px-2 md:py-1.5"
-              >
-                <p className="creel-label text-cyan-100/50 md:text-[0.62rem]">
-                  {item.label}
-                </p>
-                <p className="mt-2 text-lg font-semibold tracking-[-0.03em] text-white tabular-nums sm:text-xl md:mt-0.5 md:text-sm">
-                  {item.value}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {speciesEntries.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2 md:mt-2.5 md:gap-1">
-              {speciesEntries.map(([species, total]) => (
+            <div className="mt-4 grid grid-cols-3 gap-2.5 sm:gap-3 md:mt-2.5 md:gap-1.5">
+              {summaryItems.map((item) => (
                 <div
-                  key={species}
-                  className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-2 text-sm text-cyan-50/80 md:px-2 md:py-0.5 md:text-[0.68rem]"
+                  key={item.label}
+                  className="creel-metric-card rounded-[1.1rem] px-3 py-2.5 sm:rounded-[1.2rem] sm:px-4 sm:py-4 md:rounded-[0.75rem] md:px-2 md:py-1.5"
                 >
-                  <span className="font-medium text-white">{species}</span>{" "}
-                  {total.toLocaleString()}
+                  <p className="creel-label text-cyan-100/50 md:text-[0.62rem]">
+                    {item.label}
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tracking-[-0.03em] text-white tabular-nums sm:mt-2 sm:text-xl md:mt-0.5 md:text-sm">
+                    {item.value}
+                  </p>
                 </div>
               ))}
             </div>
-          )}
 
-          {canCompare && (
-            <div className="mt-6 grid grid-cols-2 gap-1.5 rounded-full border border-cyan-100/10 bg-white/5 p-1.5 md:mt-2.5 md:gap-1 md:p-0.5">
-              {[
-                { id: "current", label: "Current" },
-                { id: "compare", label: "Compare years" },
-              ].map((tab) => {
-                const isActive = activeView === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveView(tab.id)}
-                    aria-pressed={isActive}
-                    className={`rounded-full px-3 py-2.5 text-sm font-medium transition md:py-1 md:text-[0.68rem] ${
-                      isActive
-                        ? "bg-cyan-100/90 text-[#03111b]"
-                        : "text-cyan-50/70 hover:text-white"
-                    }`}
+            {speciesEntries.length > 0 && (
+              <div className="mt-3.5 flex flex-wrap gap-2 md:mt-2.5 md:gap-1">
+                {speciesEntries.map(([species, total]) => (
+                  <div
+                    key={species}
+                    className="rounded-full border border-cyan-100/10 bg-white/5 px-3.5 py-2 text-sm text-cyan-50/80 md:px-2 md:py-0.5 md:text-[0.68rem]"
                   >
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                    <span className="font-medium text-white">{species}</span>{" "}
+                    {total.toLocaleString()}
+                  </div>
+                ))}
+              </div>
+            )}
 
-        <div
-          className={`creel-scrollbar creel-safe-bottom flex-1 overflow-y-auto px-5 pt-5 sm:px-6 sm:pt-6 md:px-3 md:pb-3 md:pt-3 ${
-            collapsed ? "hidden md:block" : ""
-          }`}
-        >
-          {activeView === "compare" && canCompare ? (
-            <YearCompare compare={selectedReportSet.compare} />
-          ) : selectedReports.length > 0 ? (
-            <ul className="space-y-3.5 md:space-y-2">
-              {selectedReports.map((report, idx) => (
-                <ReportCard key={idx} report={report} />
-              ))}
-            </ul>
-          ) : (
-            <div className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-5 py-6 text-sm leading-7 text-cyan-50/70">
-              No reports were found for this selection.
-            </div>
-          )}
+            {canCompare && (
+              <div className="mt-4 grid grid-cols-2 gap-1.5 rounded-full border border-cyan-100/10 bg-white/5 p-1.5 md:mt-2.5 md:gap-1 md:p-0.5">
+                {[
+                  { id: "current", label: "Current" },
+                  { id: "compare", label: "Compare years" },
+                ].map((tab) => {
+                  const isActive = activeView === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveView(tab.id)}
+                      aria-pressed={isActive}
+                      className={`rounded-full px-3 py-2.5 text-sm font-medium transition md:py-1 md:text-[0.68rem] ${
+                        isActive
+                          ? "bg-cyan-100/90 text-[#03111b]"
+                          : "text-cyan-50/70 hover:text-white"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div
+            className={`creel-scrollbar creel-safe-bottom px-5 pt-5 sm:px-6 sm:pt-6 md:min-h-0 md:flex-1 md:overflow-y-auto md:px-3 md:pb-3 md:pt-3 ${
+              collapsed ? "hidden md:block" : ""
+            }`}
+          >
+            {activeView === "compare" && canCompare ? (
+              <YearCompare compare={selectedReportSet.compare} />
+            ) : selectedReports.length > 0 ? (
+              <ul className="space-y-3.5 md:space-y-2">
+                {selectedReports.map((report, idx) => (
+                  <ReportCard key={idx} report={report} />
+                ))}
+              </ul>
+            ) : (
+              <div className="rounded-[1.4rem] border border-cyan-100/10 bg-white/5 px-5 py-6 text-sm leading-7 text-cyan-50/70">
+                No reports were found for this selection.
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
